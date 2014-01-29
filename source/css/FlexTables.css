@@ -142,6 +142,29 @@
     line-height: normal;
 }
 
+.mw-content div.mw-content-context-menu {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background-color: rgba(240, 240, 240, 0.8);
+    z-index: 111110000;
+    border: 1px solid #aaaaaa;
+}
+
+.mw-content div.mw-content-context-menu div.mw-context-menu {
+    padding: 0px 10px;
+    line-height: 30px;
+    height: 30px;
+    font-family: Arial;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.mw-content div.mw-content-context-menu div.mw-context-menu:hover {
+    background-color: #aaaaaa;
+}
+
 .mw-content table tr.mw-content-tr td.mw-content-td div.mw-content-td-div {
     padding-left: 10px;
 }

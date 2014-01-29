@@ -1,5 +1,6 @@
+var grid;
 window.onload = function() {
-    var grid = new Grid("grid");
+    grid = new Grid("grid");
     grid.setColums(["Nome", "Preco", "Unidade"]);
     grid.setWidthColums(["*", "100", "100"]); //Colunas em px
     grid.setColumsType(["str", "flt", "int"]); //
