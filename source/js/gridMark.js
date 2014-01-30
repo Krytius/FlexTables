@@ -6,8 +6,11 @@ function GridMark() {
     var linhaAnterior;
     var linhaSelectAtual;
 
-    var itensParaScroll = 0;
-    var valueDoScroll = 0;
+    // Variavel de controle de paginação
+    var paginaAtual = 0;
+    var quantidadePaginas = 0;
+    var linhasPorPagina = 0;
+    var tamanhoPagina = 0;
 
     // Callbacks
     var objetoCallback = {};
@@ -23,10 +26,19 @@ function GridMark() {
         object = obj;
     };
 
+    /**
+     * Função que retorna linha anterior marcada
+     * @returns {GridMark@call;getAttribute|GridMark.linhaSelectAtual|GridMark.linhaAnterior|Date|String}
+     */
     this.getLinhaAnterior = function() {
         return linhaAnterior;
     };
 
+    /**
+     * Função que seta valor na linha anterior
+     * @param {Interger} val
+     * @returns {void}
+     */
     this.setLinhaAnterior = function(val) {
         linhaAnterior = val;
         return;
@@ -37,7 +49,6 @@ function GridMark() {
      * @return {[type]} [description]
      */
     this.getRowSelect = function() {
-
         if (linhaSelectAtual) {
             return {
                 rowSelect: linhaSelectAtual,
@@ -50,6 +61,10 @@ function GridMark() {
         };
     };
 
+    /**
+     * Função que remove o contextMenu se ele existir
+     * @returns {void}
+     */
     var removeContext = function() {
         if (selector('.mw-content div.mw-content-context-menu'))
             selector('.mw-content').removeChild(selector('.mw-content div.mw-content-context-menu'));
@@ -69,6 +84,7 @@ function GridMark() {
         this.className += " select";
 
         linhaAnterior = linhaSelectAtual;
+        getPaginacao("click");
     };
 
     /**
@@ -87,6 +103,7 @@ function GridMark() {
         element.className += " select";
 
         linhaAnterior = linhaSelectAtual;
+        getPaginacao("click");
     };
 
     /**
@@ -97,16 +114,7 @@ function GridMark() {
      */
     this.parametrosPaginacao = function(element, callbacks) {
         objetoCallback = callbacks;
-
-        var quantLinhas = element.childNodes[0].childNodes.length;
-        var tamanhoContent = element.offsetHeight;
-        var tamanhoTabela = element.childNodes[0].offsetHeight;
-
-        var quantidadePaginas = Math.floor(tamanhoTabela / tamanhoContent) + 1;
-        var quantidadePorPaginas = Math.floor(quantLinhas / quantidadePaginas);
-
-        itensParaScroll = quantidadePorPaginas;
-        valueDoScroll = tamanhoContent;
+        self.configPaginacao();
     };
 
     /**
@@ -140,6 +148,7 @@ function GridMark() {
         element.className += " select";
 
         linhaAnterior = linhaSelectAtual;
+        getPaginacao("keypress");
     };
 
     /**
@@ -175,10 +184,6 @@ function GridMark() {
 
         if (validacaoAcontecimento(parseInt(linhaSelectAtual) - 1, table))
             return;
-
-        //Regra da paginação do scroll
-
-
         selectRow(table.childNodes[parseInt(linhaSelectAtual) - 1]);
     };
 
@@ -195,9 +200,6 @@ function GridMark() {
                 selectRow(objetoCallback.addRow(elemet));
             return;
         }
-
-        //Regra da paginação do scroll
-
         selectRow(table.childNodes[parseInt(linhaSelectAtual) + 1]);
     };
 
@@ -216,17 +218,43 @@ function GridMark() {
             }
         } else {
             if (e.ctrlKey && e.keyCode === 38) {
+                e.preventDefault();
                 selectFirstRow(this);
             } else if (e.ctrlKey && e.keyCode === 40) {
+                e.preventDefault();
                 selectBeforeRow(this);
             } else if (e.keyCode === 38) {
+                e.preventDefault();
                 selectRowUp(this);
             } else if (e.keyCode === 40) {
+                e.preventDefault();
                 selectRowDown(this);
             }
         }
     };
 
+    this.configPaginacao = function() {
+        var contentHeight = selector(".mw-content").offsetHeight;
+        var tableHeight = selector(".mw-content table").offsetHeight;
+
+        // Verificação da quantidade de páginas
+        quantidadePaginas = Math.floor(tableHeight / contentHeight);
+        if ((tableHeight / contentHeight) > quantidadePaginas)
+            quantidadePaginas += 1;
+
+        // Verificação da quantidade de itens por página
+        var quantidadeRow = selector(".mw-content table").childNodes.length;
+        linhasPorPagina = Math.floor(quantidadeRow / quantidadePaginas);
+        tamanhoPagina = linhasPorPagina * 42;
+    };
+
+    var getPaginacao = function(val) {
+        paginaAtual = Math.floor(linhaSelectAtual / linhasPorPagina);
+
+        if (val === "keypress")
+            selector(".mw-content").scrollTop = paginaAtual * tamanhoPagina;
+    };
+    
     /**
      * Monitor de eventos do Teclado
      * @param {Function} callback

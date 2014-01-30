@@ -5,17 +5,17 @@ window.onload = function() {
     grid.setColumsType(["str", "flt", "int"]); //
     grid.setColumsEvents(["edit", "noEvent", "number"]);
     grid.setContextMenu([{
-            menu: "Menu 1",
-            icon: "Teste",
-            callback: function(){
-                alert('aqui');
+            name: "Alerta",
+            icon: "img/salvar.jpg",
+            callback: function(rowId, dataId) {
+                alert(rowId + " / " + dataId);
             }
-    },{
-            menu: "Menu 2",
-            icon: "Teste",
-            callback: function(){
-                console.log('aqui');
+        }, {
+            name: "Console",
+            icon: "img/salvar.jpg",
+            callback: function(rowId, dataId) {
+                console.log(rowId, dataId);
             }
-    }]);
+        }]);
     grid.init(js);
 };

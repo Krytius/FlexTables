@@ -165,6 +165,20 @@
     background-color: #aaaaaa;
 }
 
+.mw-content div.mw-content-context-menu div.mw-context-menu .mw-icon {
+    width: 20px;
+    height: 20px;
+    background-repeat: no-repeat;
+    background-size: 20px 20px;
+    margin: 5px 0 0 0;
+    float: left;
+}
+
+.mw-content div.mw-content-context-menu div.mw-context-menu .mw-text {
+    float: left;
+    margin-left: 10px;
+}
+
 .mw-content table tr.mw-content-tr td.mw-content-td div.mw-content-td-div {
     padding-left: 10px;
 }
