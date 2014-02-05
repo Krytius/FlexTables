@@ -1,0 +1,14 @@
+#grid {
+    height: 630px;
+    width: 770px;
+}
+
+.button {
+    height: 30px;
+    width: 150px;
+    line-height: 30px;
+    background: #AAAAAA;
+    margin: 10px;
+    text-align: center;
+    float: left;
+}

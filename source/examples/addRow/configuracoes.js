@@ -6,7 +6,7 @@ window.onload = function() {
     grid.setColumsType(["str", "flt", "int"]); //
     grid.setColumsEvents(["edit", "noEvent", "number"]);
     //grid.setWidthColumsPercent(["*", "*", "10", "30"]); //Colunas em %
-    grid.init(js);
+    
 //        grid.setMonitorEvents("onKeyPress", function(key,cntrol,shift,alt){
 //            console.log(key,cntrol,shift, alt);
 //        });
@@ -16,7 +16,8 @@ window.onload = function() {
     grid.setMonitorEvents("onEdit", function(aValor, nValor, colum, linhaId, dataId) {
         console.log(aValor, nValor, colum, linhaId, dataId);
     });
-
+    
+    grid.init(js);
 
     //Add Linha Custom
     document.getElementById("button").onclick = function() {

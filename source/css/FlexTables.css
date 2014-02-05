@@ -191,6 +191,19 @@
     padding-left: 10px;
 }
 
+.mw-content table tr.mw-content-tr td.mw-content-td .mw-content-td-check {
+    width: 28px;
+    height: 24px;
+}
+
+.mw-content table tr.mw-content-tr td.mw-content-td .mw-content-td-check.enabled {
+    background-image: url(img/check-box-true.png);
+}
+
+.mw-content table tr.mw-content-tr td.mw-content-td .mw-content-td-check.disabled {
+    background-image: url(img/check-box-false.png);
+}
+
 .mw-content table tr.mw-content-tr td.mw-content-td div.mw-content-td-div .mw-content-number {
     width: 100%;
     border: 1px solid #AAAAAA;

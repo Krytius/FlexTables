@@ -8,16 +8,26 @@ function GridContextMenu() {
 
     //Callback
     var selectRow;
-
-
+    
+    /**
+     * Função que inguala as informações do grid
+     * @param {Object} json
+     * @param {Object} menuContext
+     * @param {Function} select
+     * @returns {void}
+     */
     this.init = function(json, menuContext, select) {
         object = json;
         contextMenu = menuContext;
         selectRow = select;
         return;
     };
-
-
+    
+    /**
+     * Função que pega o click do botão direito
+     * @param {Event} e
+     * @returns {void}
+     */
     this.vicContextMenu = function(e) {
         e.preventDefault();
         linhaId = this.getAttribute('linha-id');
@@ -25,7 +35,13 @@ function GridContextMenu() {
         selectRow(this);
         createContextMenu(e.y, e.x);
     };
-
+    
+    /**
+     * Apresenta o menu no plano mostrado
+     * @param {Interger} y
+     * @param {Interger} x
+     * @returns {void}
+     */
     var createContextMenu = function(y, x) {
         var content = selector(".mw-content");
         var menu = create("div");
@@ -73,7 +89,11 @@ function GridContextMenu() {
         menu.style.height = height + "px";
         content.appendChild(menu);
     };
-
+    
+    /**
+     * Callback do context menu
+     * @returns {void}
+     */
     var executeCallback = function() {
         var content = selector(".mw-content");
         var id = this.getAttribute("menu-id");
@@ -82,7 +102,6 @@ function GridContextMenu() {
         content.removeChild(this.parentNode);
         contextMenu[id].callback(linhaId, dataId);
     };
-
 
     /**
      * Função que busca elemento DON

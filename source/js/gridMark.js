@@ -65,7 +65,7 @@ function GridMark() {
      * Função que remove o contextMenu se ele existir
      * @returns {void}
      */
-    var removeContext = function() {
+    this.removeContext = function() {
         if (selector('.mw-content div.mw-content-context-menu'))
             selector('.mw-content').removeChild(selector('.mw-content div.mw-content-context-menu'));
     };
@@ -78,7 +78,7 @@ function GridMark() {
         if (linhaAnterior) {
             var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
             elemet.className = elemet.className.replace(" select", "");
-            removeContext();
+            self.removeContext();
         }
         linhaSelectAtual = this.getAttribute("linha-id");
         this.className += " select";
@@ -96,7 +96,7 @@ function GridMark() {
         if (linhaAnterior) {
             var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
             elemet.className = elemet.className.replace(" select", "");
-            removeContext();
+            self.removeContext();
         }
 
         linhaSelectAtual = element.getAttribute("linha-id");
@@ -141,7 +141,7 @@ function GridMark() {
         if (linhaAnterior) {
             var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
             elemet.className = elemet.className.replace(" select", "");
-            removeContext();
+            self.removeContext();
         }
 
         linhaSelectAtual = element.getAttribute("linha-id");
@@ -232,7 +232,11 @@ function GridMark() {
             }
         }
     };
-
+    
+    /**
+     * Função que informa os parametros de configuração do grid
+     * @returns {void}
+     */
     this.configPaginacao = function() {
         var contentHeight = selector(".mw-content").offsetHeight;
         var tableHeight = selector(".mw-content table").offsetHeight;
@@ -247,7 +251,12 @@ function GridMark() {
         linhasPorPagina = Math.floor(quantidadeRow / quantidadePaginas);
         tamanhoPagina = linhasPorPagina * 42;
     };
-
+    
+    /**
+     * Paginação do grid
+     * @param {type} val
+     * @returns {void}
+     */
     var getPaginacao = function(val) {
         paginaAtual = Math.floor(linhaSelectAtual / linhasPorPagina);
 

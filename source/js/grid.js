@@ -23,6 +23,7 @@ function Grid(idDom) {
     var colunasType = [];
     var colunasEvents = [];
     var contextMenu = [];
+    var colunasMask = [];
 
     // Variavel de controle de tentativas
     var tentativas = 0;
@@ -31,7 +32,7 @@ function Grid(idDom) {
 
     // Callbacks
     var callbackOnDeleteRow;
-
+    var callbackAlterObject;
 
     /**
      * Função que inicia a montagem do Grid
@@ -50,11 +51,13 @@ function Grid(idDom) {
      */
     var igualaObjetos = function(json) {
         object = json;
-        gridElement.init(json);
+        gridElement.init(json, colunasMask, colunasType, colunasEvents);
         gridEvent.init(json);
         gridMark.init(json);
-        gridManipulate.init(element, object, colunas, colunasWidth, colunasType, colunasEvents);
         gridContextMenu.init(json, contextMenu, gridMark.selectionRowForce);
+
+        if (callbackAlterObject)
+            callbackAlterObject(json);
     };
 
     /**
@@ -181,6 +184,12 @@ function Grid(idDom) {
         return;
     };
 
+
+    this.setColumsMask = function(masks) {
+        colunasMask = masks;
+        return;
+    };
+
     /**
      * Função que seta o evento que pode ocorrer na coluna
      * @param {Array} events tipos dos eventos da coluna
@@ -193,6 +202,13 @@ function Grid(idDom) {
         return;
     };
 
+    /**
+     * Função que seta o objeto com menu icone e callback, 
+     * para o menu de contexto.
+     * 
+     * @param {Object} menus
+     * @returns {void}
+     */
     this.setContextMenu = function(menus) {
         contextMenu = menus;
         return;
@@ -256,6 +272,10 @@ function Grid(idDom) {
         var table = create('table');
         table.style.width = element.offsetWidth - 17 + "px";
 
+        if (contextMenu.length > 0) {
+            window.onclick = gridMark.removeContext;
+        }
+
         for (var l = 0; l < quantLinhas; l++) {
             var tr = create('tr');
             tr.className = "mw-content-tr";
@@ -263,7 +283,7 @@ function Grid(idDom) {
             tr.setAttribute('data-id', objectJson.rows[l].id);
             tr.onclick = gridMark.selectRow;
 
-            if (contextMenu) {
+            if (contextMenu.length > 0) {
                 tr.oncontextmenu = gridContextMenu.vicContextMenu;
             }
 
@@ -274,11 +294,9 @@ function Grid(idDom) {
                 td.setAttribute('colum-id', c);
                 td.width = colunasWidth[c];
 
-                var divTd = create('div');
-                divTd.className = "mw-content-td-div";
-                divTd.innerHTML = objectJson.rows[l].data[c];
-                gridElement.elementEvent(divTd, colunasEvents[c], function(obj) {
-                    object = obj;
+                var divTd = gridElement.createColumType(colunasEvents[c], objectJson.rows[l].data[c]);
+                gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
+                    igualaObjetos(obj);
                 });
 
                 td.appendChild(divTd);
@@ -336,16 +354,10 @@ function Grid(idDom) {
             td.className = "mw-content-td";
             td.setAttribute('colum-id', c);
             td.width = colunasWidth[c];
-
-            var divTd = create('div');
-            divTd.className = "mw-content-td-div";
-
-            if (custom)
-                divTd.innerHTML = objetoLinha.itensColunas[c];
-            else
-                divTd.innerHTML = (colunasType[c] === "str") ? idioma['newRow'] : idioma['newRowNumber'];
-
-            gridElement.elementEvent(divTd, colunasEvents[c], function(obj) {
+            
+            var valor = (custom) ? objetoLinha.itensColunas[c] : (colunasType[c] === "str") ? idioma['newRow'] : idioma['newRowNumber'];
+            var divTd = gridElement.createColumType(colunasEvents[c], valor);
+            gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
                 igualaObjetos(obj);
             });
 
@@ -448,11 +460,17 @@ function Grid(idDom) {
             case "onEdit":
                 gridElement.setCallbackOnEdit(callback);
                 break;
+            case "onCheck":
+                gridElement.setCallbackOnCheck(callback);
+                break;
             case "onKeyPress":
                 gridMark.setCallbackOnKeyPress(callback);
                 break;
             case "onDeleteRow":
                 setCallbackOnDeleteRow(callback);
+                break;
+            case "onObject":
+                setMonitoringAlterObject(callback);
                 break;
         }
     };
@@ -476,6 +494,16 @@ function Grid(idDom) {
      */
     var setCallbackOnDeleteRow = function(callback) {
         callbackOnDeleteRow = callback;
+        return;
+    };
+
+    /**
+     * Monitor de eventos do objeto principal
+     * @param {Function} callback
+     * @returns {void}
+     */
+    var setMonitoringAlterObject = function(callback) {
+        callbackAlterObject = callback;
         return;
     };
 

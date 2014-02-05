@@ -1,20 +1,77 @@
 function GridElement() {
-
-
     //Globais
     var self = this;
     var object;
     var linhaAddSemCustomizacao = 1000000000;
     var callbackEdit;
+
+    // Monitor de Eventos
     var callbackOnEdit;
+    var callbackOnCheck;
+
+    // Masks
+    var colunasType = [];
+    var colunasMask = [];
+    var colunasEvents = [];
 
     /**
      * Função que inicia o objeto da funcao
      * @param {Object} obj
      * @returns {void}
      */
-    this.init = function(obj) {
+    this.init = function(obj, masks, types, events) {
         object = obj;
+        colunasMask = masks;
+        colunasType = types;
+        colunasEvents = events;
+        return;
+    };
+
+    /**
+     * Função que seleciona o tipo de coluna a ser criado o element
+     * @param {String} events
+     * @param {String} val
+     * @returns {DON|GridElement.createDiv.divTd|Element|GridElement.createElmentCheck.check}
+     */
+    this.createColumType = function(events, val) {
+        var element;
+        switch (events) {
+            case "edit":
+            case "number":
+                element = createDiv(val);
+                break;
+            case "check":
+                element = createElmentCheck(val);
+                break;
+            default:
+                element = createDiv(val);
+                break;
+        }
+        return element;
+    };
+
+    /**
+     * Função cria elemento para os tipos (edit|number)
+     * @param {String} val
+     * @returns {DON|GridElement.createDiv.divTd|Element}
+     */
+    var createDiv = function(val) {
+        var divTd = create('div');
+        divTd.className = "mw-content-td-div";
+        divTd.innerHTML = val;
+        return divTd;
+    };
+
+    /**
+     * Função cria elemento para os tipos (check)
+     * @param {String} val
+     * @returns {DON|GridElement.createElmentCheck.check|Element}
+     */
+    var createElmentCheck = function(val) {
+        var check = create('div');
+        check.className = "mw-content-td-check";
+        check.className += (parseInt(val)) ? ' enabled' : ' disabled';
+        return check;
     };
 
     /**
@@ -24,19 +81,27 @@ function GridElement() {
      * @param {Function} callback
      * @returns {void}
      */
-    this.elementEvent = function(element, evt, callback) {
+    this.elementEvent = function(element, evt, type, callback) {
         switch (evt) {
             case "edit":
                 element.ondblclick = function() {
                     callbackEdit = callback;
-                    onEditEvent(element, "text");
+                    onEditEvent(element, "text", type);
                 };
                 break;
             case "number":
                 element.ondblclick = function() {
                     callbackEdit = callback;
-                    onEditEvent(element, "number");
+                    onEditEvent(element, "text", type);
                 };
+                break;
+            case "check":
+                element.onclick = function() {
+                    callbackEdit = callback;
+                    onChackUncheck(element);
+                };
+                break;
+            default:
                 break;
         }
     };
@@ -46,7 +111,7 @@ function GridElement() {
      * @param {DON} elemen
      * @returns {void}
      */
-    var onEditEvent = function(elemen, type) {
+    var onEditEvent = function(elemen, type, propriedade) {
         var text = elemen.innerHTML;
         var linhaId = parseInt(elemen.parentNode.parentNode.getAttribute('linha-id'));
         var dataId = parseInt(elemen.parentNode.parentNode.getAttribute('data-id'));
@@ -71,7 +136,7 @@ function GridElement() {
             if (callbackOnEdit)
                 callbackOnEdit(text, valor, columId, linhaId, dataId);
         };
-        input.onkeydown = function(e) {
+        input.onkeyup = function(e) {
             var valor = this.value;
             if (e.keyCode === 13) {
                 this.onblur = null;
@@ -91,6 +156,10 @@ function GridElement() {
                 callbackEdit(objectReturn(text, text, columId, linhaId, dataId));
                 if (callbackOnEdit)
                     callbackOnEdit(text, text, columId, linhaId, dataId);
+            } else if (e.keyCode !== 46 || e.keyCode !== 8) {
+                if (colunasMask.length > 0) {
+                    verificaMask(this);
+                }
             }
         };
 
@@ -125,6 +194,65 @@ function GridElement() {
         onEditEvent(elemen, type);
     };
 
+    var onChackUncheck = function(element) {
+        var className = element.className.split(" ")[1];
+        var text, valor;
+        var dataId = element.parentNode.parentNode.getAttribute('data-id')
+        var rowId = element.parentNode.parentNode.getAttribute('linha-id');
+        var colum = element.parentNode.getAttribute('colum-id');
+
+        if (className === "enabled") {
+            element.className = element.className.replace("enabled", "disabled");
+            text = 1;
+            valor = 0;
+        } else {
+            element.className = element.className.replace("disabled", "enabled")
+            text = 0;
+            valor = 1;
+        }
+        callbackEdit(objectReturn(text, valor, colum, rowId, dataId));
+        if (callbackOnCheck)
+            callbackOnCheck((valor) ? true : false, parseInt(colum), parseInt(rowId), parseInt(dataId));
+    };
+
+    /**
+     * Verifica se o usuário vai utilizar mascara padrão do tipo do campo ou personalizada
+     * @param {DON} element
+     * @returns {void}
+     */
+    var verificaMask = function(element) {
+        var coluna = element.parentNode.parentNode.getAttribute('colum-id');
+
+        if (colunasMask[coluna] === "not")
+            addMaskPadrao(colunasType[coluna], element);
+        else
+            addMaskPersonalizada(colunasMask[coluna], element);
+    };
+
+    /**
+     * Função e faz o todo o processo para mascaras personalizadas
+     * @param {String} mask
+     * @param {DON} element
+     * @returns {void}
+     */
+    var addMaskPersonalizada = function(mask, element) {
+        MaskInput(mask, element);
+    };
+
+    var addMaskPadrao = function(type, element) {
+        switch (type) {
+            case "int":
+                MaskPadrao("9", element);
+                break;
+            case "flt":
+                MaskPadrao("9.9", element);
+                break;
+            default:
+                MaskPadrao("a", element);
+                break;
+        }
+    };
+
     /**
      * Monitor de eventos do Edit
      * @param {Function} callback
@@ -132,6 +260,16 @@ function GridElement() {
      */
     this.setCallbackOnEdit = function(callback) {
         callbackOnEdit = callback;
+        return;
+    };
+
+    /**
+     * Monitor de eventos do Check
+     * @param {Function} callback
+     * @returns {void}
+     */
+    this.setCallbackOnCheck = function(callback) {
+        callbackOnCheck = callback;
         return;
     };
 
@@ -148,7 +286,7 @@ function GridElement() {
         if (text === valor) {
             return object;
         }
-        if (parseInt(object.rows[linhaId].id) === dataId) {
+        if (parseInt(object.rows[linhaId].id) === parseInt(dataId)) {
             object.rows[linhaId].data[columId] = valor;
         }
         return object;
@@ -172,4 +310,3 @@ function GridElement() {
         return document.createElement(elem);
     };
 }
-;
