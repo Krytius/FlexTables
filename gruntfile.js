@@ -16,7 +16,7 @@ module.exports = function(grunt) {
                 plugin: "<%= meta.tester.examples %>flextables/",
                 js: "<%= meta.tester.plugin %>js/",
                 css: "<%= meta.tester.plugin %>css/",
-                img: "<%= meta.tester.plugin %>img/",
+                img: "<%= meta.tester.plugin %>img/"
             },
             production: {
                 raiz: "production/",
@@ -48,12 +48,12 @@ module.exports = function(grunt) {
         },
         concat: {
             options: {
-                separator: ';',
+                separator: ';'
             },
             test: {
                 src: ['<%= meta.source.js %>*.js'],
-                dest: '<%= meta.tester.plugin %><%= pkg.name %>.js',
-            },
+                dest: '<%= meta.tester.plugin %><%= pkg.name %>.js'
+            }
         },
         copy: {
             test: {
@@ -99,23 +99,12 @@ module.exports = function(grunt) {
                 tasks: ["clean:test", "concat:test", "copy:test"],
                 options: {
                     spawn: false
-                },
-            },
+                }
+            }
         },
         clean: {
             build: ["<%= meta.production.raiz %>"],
             test: ["<%= meta.tester.raiz %>"]
-        },
-        gitcommit: {
-            commit: {
-                options: {
-                    message: "<%= pkg.ultimoCommit %> / Version: <%= pkg.version %>"
-                },
-                files: {
-//                            src: ["<%= meta.source.raiz %>**/**", "<%= meta.production.raiz %>**/**", "./gruntfile.js", "./package.json", "./.gitigone", "./README.md"];
-src: ['./gruntfile.js']
-                }
-            }
         }
     });
 
@@ -125,11 +114,9 @@ src: ['./gruntfile.js']
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-git');
 
     //Comandos
     grunt.registerTask('test', ["clean:test", "concat:test", "copy:test", "watch:test"]);
     grunt.registerTask('build', ["clean:build", "uglify:build", "cssmin:build", "copy:build"]);
-    grunt.registerTask('commit', ["gitcommit:commit"]);
 
 };
