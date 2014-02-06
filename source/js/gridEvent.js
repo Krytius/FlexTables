@@ -3,14 +3,22 @@ function GridEvent() {
     // Globais
     var object;
     var objetoOrdenar = {id: "", ordenacao: ""};
+    var colunEvent = [];
+
+    // Cache dos Objetos
+    var asc = null;
+    var desc = null;
 
     /**
      * Function que inicia o objeto do grid
      * @param {Object} obj
      * @returns {void}
      */
-    this.init = function(obj) {
+    this.init = function(obj, events) {
         object = obj;
+        colunEvent = events;
+        asc = null;
+        desc = null;
     };
 
     /**
@@ -20,42 +28,54 @@ function GridEvent() {
      * @param {Function} callback
      * @returns {void}
      */
-    this.ordenar = function(elem, json, callback) {
+    this.ordenar = function(elem, callback) {
         var id = elem.getAttribute('data-id');
         var type = elem.getAttribute('type-coluna');
         var idAntigo = objetoOrdenar.id;
         var antigaOrdenacao = objetoOrdenar.ordenacao;
 
-        if (idAntigo === id && antigaOrdenacao === "ASC") {
-            objetoOrdenar.ordenacao = "DESC";
-        } else if (idAntigo === id && antigaOrdenacao === "DESC") {
-            objetoOrdenar.ordenacao = "ASC";
-        } else {
-            objetoOrdenar.ordenacao = "ASC";
-            objetoOrdenar.id = id;
-        }
-
-        if (selector("#ordenacao[data-id='" + id + "']")) {
-            var element = document.getElementById("ordenacao");
-            element.className = objetoOrdenar.ordenacao;
-        } else {
-
-            if (idAntigo !== id && idAntigo) {
-                var elementAntigo = selector("#ordenacao[data-id='" + idAntigo + "']");
-                var paiElmentoAntigo = elementAntigo.parentNode;
-                paiElmentoAntigo.removeChild(elementAntigo);
+        if (colunEvent[parseInt(id)] !== "select") {
+            if (idAntigo === id && antigaOrdenacao === "ASC") {
+                objetoOrdenar.ordenacao = "DESC";
+            } else if (idAntigo === id && antigaOrdenacao === "DESC") {
+                objetoOrdenar.ordenacao = "ASC";
+            } else {
+                objetoOrdenar.ordenacao = "ASC";
+                objetoOrdenar.id = id;
             }
 
-            var order = document.createElement('div');
-            order.className = objetoOrdenar.ordenacao;
-            order.id = "ordenacao";
-            order.setAttribute('data-id', id);
+            if (selector("#ordenacao[data-id='" + id + "']")) {
+                var element = document.getElementById("ordenacao");
+                element.className = objetoOrdenar.ordenacao;
+            } else {
+                if (idAntigo !== id && idAntigo) {
+                    var elementAntigo = selector("#ordenacao[data-id='" + idAntigo + "']");
+                    var paiElmentoAntigo = elementAntigo.parentNode;
+                    paiElmentoAntigo.removeChild(elementAntigo);
+                }
 
-            elem.appendChild(order);
+                var order = document.createElement('div');
+                order.className = objetoOrdenar.ordenacao;
+                order.id = "ordenacao";
+                order.setAttribute('data-id', id);
+
+                elem.appendChild(order);
+            }
+
+            var objectJson = organizarJson(object, type, id);
+
+            if ((!asc && objetoOrdenar.ordenacao === "ASC") || (id !== idAntigo && objetoOrdenar.ordenacao === "ASC")) {
+                asc = objectJson;
+                callback(asc);
+            } else if (asc && objetoOrdenar.ordenacao === "ASC") {
+                callback(asc);
+            } else if ((!desc && objetoOrdenar.ordenacao === "DESC") || (id !== idAntigo && objetoOrdenar.ordenacao === "DESC")) {
+                desc = objectJson;
+                callback(desc);
+            } else if (desc && objetoOrdenar.ordenacao === "DESC") {
+                callback(desc);
+            }
         }
-
-        var objectJson = organizarJson(json, type, id);
-        callback(objectJson);
     };
 
     /**

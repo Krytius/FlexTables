@@ -14,6 +14,13 @@ function GridElement() {
     var colunasMask = [];
     var colunasEvents = [];
 
+    // Temporarios
+    var paramSelect = [];
+
+
+    // Parametros
+    var columTamanho = 0;
+
     /**
      * Função que inicia o objeto da funcao
      * @param {Object} obj
@@ -34,10 +41,13 @@ function GridElement() {
      * Função que seleciona o tipo de coluna a ser criado o element
      * @param {String} events
      * @param {String} val
+     * @param {Interger} tamanho
+     * @param {Interger} indice
      * @returns {DON|GridElement.createDiv.divTd|Element|GridElement.createElmentCheck.check}
      */
-    this.createColumType = function(events, val) {
+    this.createColumType = function(events, val, tamanho, indice) {
         var element;
+        columTamanho = tamanho - 10;
         switch (events) {
             case "edit":
             case "number":
@@ -46,8 +56,8 @@ function GridElement() {
             case "check":
                 element = createElmentCheck(val);
                 break;
-            case "selected":
-                element = createSelected(val);
+            case "select":
+                element = createSelected(val, indice);
                 break;
             default:
                 element = createDiv(val);
@@ -64,14 +74,18 @@ function GridElement() {
     var createDiv = function(val) {
         var divTd = create('div');
         divTd.className = "mw-content-td-div";
+        divTd.style.width = columTamanho + "px";
         divTd.innerHTML = val;
+        divTd.setAttribute('title', val);
         return divTd;
     };
 
-    var createSelected = function(val) {
+    var createSelected = function(val, indice) {
         var divTd = create('div');
         divTd.className = "mw-content-td-div";
+        divTd.style.width = columTamanho + "px";
         divTd.innerHTML = val.itens[val.selected];
+        divTd.setAttribute('title', val.itens[val.selected]);
         return divTd;
     };
 
@@ -91,6 +105,7 @@ function GridElement() {
      * Eventos do grid
      * @param {DON} element
      * @param {String} evt
+     * @param {String} type
      * @param {Function} callback
      * @returns {void}
      */
@@ -103,7 +118,7 @@ function GridElement() {
                     onEditEvent(element, "text", type);
                 };
                 break;
-            case "selected":
+            case "select":
                 element.ondblclick = function() {
                     callbackEdit = callback;
                     onSelectEvent(element);
@@ -141,36 +156,18 @@ function GridElement() {
         input.type = type;
         input.className = "mw-content-text";
         input.value = text;
-        input.onblur = function(e) {
+        input.onblur = function() {
             var valor = this.value;
-            elemen.innerHTML = this.value;
-            elemen.ondblclick = function() {
-                onEditEvent(elemen);
-            };
-            callbackEdit(objectReturn(text, valor, columId, linhaId, dataId));
-            if (callbackOnEdit)
-                callbackOnEdit(text, valor, columId, linhaId, dataId);
+            editEvent(elemen, valor, text, columId, linhaId, dataId);
         };
         input.onkeyup = function(e) {
             var valor = this.value;
             if (e.keyCode === 13) {
                 this.onblur = null;
-                elemen.innerHTML = valor;
-                elemen.ondblclick = function() {
-                    onEditEvent(elemen);
-                };
-                callbackEdit(objectReturn(text, valor, columId, linhaId, dataId));
-                if (callbackOnEdit)
-                    callbackOnEdit(text, valor, columId, linhaId, dataId);
+                editEvent(elemen, valor, text, columId, linhaId, dataId);
             } else if (e.keyCode === 27) {
                 this.onblur = null;
-                elemen.innerHTML = text;
-                elemen.ondblclick = function() {
-                    onEditEvent(elemen);
-                };
-                callbackEdit(objectReturn(text, text, columId, linhaId, dataId));
-                if (callbackOnEdit)
-                    callbackOnEdit(text, text, columId, linhaId, dataId);
+                editEvent(elemen, text, text, columId, linhaId, dataId);
             } else if (e.keyCode !== 46 || e.keyCode !== 8) {
                 if (colunasMask.length > 0) {
                     verificaMask(this);
@@ -182,6 +179,27 @@ function GridElement() {
         elemen.appendChild(input);
         input.focus();
         elemen.ondblclick = null;
+    };
+
+    /**
+     * Função que tem callbacks do edit
+     * @param {DON} elemen
+     * @param {string} valor
+     * @param {string} text
+     * @param {interger} columId
+     * @param {interger} linhaId
+     * @param {interger} dataId
+     * @returns {void}
+     */
+    var editEvent = function(elemen, valor, text, columId, linhaId, dataId) {
+        elemen.innerHTML = valor;
+        elemen.setAttribute('title', valor);
+        elemen.ondblclick = function() {
+            onEditEvent(elemen);
+        };
+        callbackEdit(objectReturn(text, valor, columId, linhaId, dataId));
+        if (callbackOnEdit)
+            callbackOnEdit(text, valor, columId, linhaId, dataId);
     };
 
     /**
@@ -201,7 +219,10 @@ function GridElement() {
         };
 
         for (var i = 0; i < colunasDaLinha; i++) {
-            obj.data.push(linha.childNodes[i].childNodes[0].innerHTML);
+            if (colunasEvents[i] !== "select")
+                obj.data.push(linha.childNodes[i].childNodes[0].innerHTML);
+            else
+                obj.data.push(object.rows[0].data[i]);
         }
 
         object.rows.push(obj);
@@ -217,7 +238,7 @@ function GridElement() {
     var onChackUncheck = function(element) {
         var className = element.className.split(" ")[1];
         var text, valor;
-        var dataId = element.parentNode.parentNode.getAttribute('data-id')
+        var dataId = element.parentNode.parentNode.getAttribute('data-id');
         var rowId = element.parentNode.parentNode.getAttribute('linha-id');
         var colum = element.parentNode.getAttribute('colum-id');
 
@@ -226,7 +247,7 @@ function GridElement() {
             text = 1;
             valor = 0;
         } else {
-            element.className = element.className.replace("disabled", "enabled")
+            element.className = element.className.replace("disabled", "enabled");
             text = 0;
             valor = 1;
         }
@@ -245,11 +266,16 @@ function GridElement() {
         var linhaId = parseInt(element.parentNode.parentNode.getAttribute('linha-id'));
         var dataId = parseInt(element.parentNode.parentNode.getAttribute('data-id'));
         var columId = parseInt(element.parentNode.getAttribute('colum-id'));
+        
+        if (dataId === -1) {
+            insertObject(element);
+            return;
+        }
+        
         var obj = object.rows[linhaId].data[columId];
         var text = obj.itens[obj.selected];
 
         var label = create('label');
-
         var select = create('select');
         select.className = 'mw-content-td-select';
 
@@ -296,7 +322,7 @@ function GridElement() {
         select.focus();
         coluna.ondblclick = null;
     };
-    
+
     /**
      * Função que aplica as regras para o evento de selecionar ou sair do campo
      * @param {DON} don
@@ -304,21 +330,58 @@ function GridElement() {
      * @returns {void}
      */
     var eventSelect = function(don, obj) {
-        var reformularLinha = {
-            selected: parseInt(obj.valor),
-            itens: object.rows[obj.linhaId].data[obj.colum].itens
-        };
+        var reformularLinha = {};
         
+        if (object.rows[obj.linhaId]) {
+            reformularLinha = {
+                selected: parseInt(obj.valor),
+                itens: object.rows[obj.linhaId].data[obj.colum].itens
+            };
+        } else {
+            reformularLinha = {
+                selected: parseInt(obj.valor),
+                itens: paramSelect[obj.colum].itens
+            };
+            insertObject(don);
+        }
+
         don.innerHTML = "";
         var elemen = createSelected(reformularLinha);
         elemen.ondblclick = function() {
             onSelectEvent(elemen);
         };
         don.appendChild(elemen);
-        
+
         callbackEdit(objectReturn(obj.text, reformularLinha, obj.colum, parseInt(obj.linhaId), obj.dataId));
         if (callbackOnEdit)
             callbackOnEdit(obj.text, object.rows[obj.linhaId].data[obj.colum].itens[obj.valor], obj.colum, obj.linhaId, obj.dataId);
+    };
+    
+    /**
+     * Insere linha no objeto principal
+     * @param {DON} don
+     * @returns {void}
+     */
+    var insertObject = function(don) {
+        var linha = don.parentNode.parentNode;
+        var colunasDaLinha = linha.childNodes.length;
+        
+        linha.setAttribute('data-id', linhaAddSemCustomizacao);
+        var obj = {
+            id: linhaAddSemCustomizacao,
+            data: []
+        };
+
+        for (var i = 0; i < colunasDaLinha; i++) {
+            if (colunasEvents[i] !== "select")
+                obj.data.push(linha.childNodes[i].childNodes[0].innerHTML);
+            else
+                obj.data.push(object.rows[0].data[i]);
+        }
+
+        object.rows.push(obj);
+        linhaAddSemCustomizacao++;
+        onSelectEvent(don);
     };
 
     /**
@@ -344,7 +407,7 @@ function GridElement() {
     var addMaskPersonalizada = function(mask, element) {
         MaskInput(mask, element);
     };
-    
+
     /**
      * Função que adiciona máscara padrão pelo tipo do elemento
      * @param {String} type

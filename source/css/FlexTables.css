@@ -9,6 +9,7 @@
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border: 1px solid #D8D8D8;
+    -webkit-touch-callout: none;  -webkit-user-select: none;  -khtml-user-select: none;  -moz-user-select: none;  -ms-user-select: none;
 }
 
 .mw-header table {
@@ -181,6 +182,8 @@
 
 .mw-content table tr.mw-content-tr td.mw-content-td div.mw-content-td-div {
     padding-left: 10px;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .mw-content table tr.mw-content-tr td.mw-content-td div.mw-content-td-div .mw-content-text {
