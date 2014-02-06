@@ -4,5 +4,6 @@ var idioma = {
     
     
     "newRow": "Nova Linha",
-    "newRowNumber": 0
+    "newRowNumber": 0,
+    "moeda": "R$ "
 };
