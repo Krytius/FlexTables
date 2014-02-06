@@ -17,6 +17,9 @@ function GridElement() {
     /**
      * Função que inicia o objeto da funcao
      * @param {Object} obj
+     * @param {Array} masks
+     * @param {Array} types
+     * @param {Array} events
      * @returns {void}
      */
     this.init = function(obj, masks, types, events) {
@@ -43,6 +46,9 @@ function GridElement() {
             case "check":
                 element = createElmentCheck(val);
                 break;
+            case "selected":
+                element = createSelected(val);
+                break;
             default:
                 element = createDiv(val);
                 break;
@@ -59,6 +65,13 @@ function GridElement() {
         var divTd = create('div');
         divTd.className = "mw-content-td-div";
         divTd.innerHTML = val;
+        return divTd;
+    };
+
+    var createSelected = function(val) {
+        var divTd = create('div');
+        divTd.className = "mw-content-td-div";
+        divTd.innerHTML = val.itens[val.selected];
         return divTd;
     };
 
@@ -84,15 +97,16 @@ function GridElement() {
     this.elementEvent = function(element, evt, type, callback) {
         switch (evt) {
             case "edit":
+            case "number":
                 element.ondblclick = function() {
                     callbackEdit = callback;
                     onEditEvent(element, "text", type);
                 };
                 break;
-            case "number":
+            case "selected":
                 element.ondblclick = function() {
                     callbackEdit = callback;
-                    onEditEvent(element, "text", type);
+                    onSelectEvent(element);
                 };
                 break;
             case "check":
@@ -107,11 +121,12 @@ function GridElement() {
     };
 
     /**
-     * Evento de editar uma coluna do grid
+     * Função que aplica eventos de edição
      * @param {DON} elemen
+     * @param {String} type
      * @returns {void}
      */
-    var onEditEvent = function(elemen, type, propriedade) {
+    var onEditEvent = function(elemen, type) {
         var text = elemen.innerHTML;
         var linhaId = parseInt(elemen.parentNode.parentNode.getAttribute('linha-id'));
         var dataId = parseInt(elemen.parentNode.parentNode.getAttribute('data-id'));
@@ -194,6 +209,11 @@ function GridElement() {
         onEditEvent(elemen, type);
     };
 
+    /**
+     * Função que faz alteração do procedimento de check
+     * @param {DON} element
+     * @returns {void}
+     */
     var onChackUncheck = function(element) {
         var className = element.className.split(" ")[1];
         var text, valor;
@@ -213,6 +233,92 @@ function GridElement() {
         callbackEdit(objectReturn(text, valor, colum, rowId, dataId));
         if (callbackOnCheck)
             callbackOnCheck((valor) ? true : false, parseInt(colum), parseInt(rowId), parseInt(dataId));
+    };
+
+    /**
+     * Função que faz alteração no procedimento de select
+     * @param {DON} element
+     * @returns {void}
+     */
+    var onSelectEvent = function(element) {
+        var coluna = element.parentNode;
+        var linhaId = parseInt(element.parentNode.parentNode.getAttribute('linha-id'));
+        var dataId = parseInt(element.parentNode.parentNode.getAttribute('data-id'));
+        var columId = parseInt(element.parentNode.getAttribute('colum-id'));
+        var obj = object.rows[linhaId].data[columId];
+        var text = obj.itens[obj.selected];
+
+        var label = create('label');
+
+        var select = create('select');
+        select.className = 'mw-content-td-select';
+
+        for (var i = 0; i < obj.itens.length; i++) {
+            var option = create('option');
+            option.innerHTML = obj.itens[i];
+            option.value = i;
+
+            if (i === obj.selected)
+                option.selected = true;
+            else
+                option.selected = false;
+
+            select.appendChild(option);
+        }
+
+        select.onblur = function() {
+            var objectFinal = {
+                linhaId: linhaId,
+                dataId: dataId,
+                colum: columId,
+                text: text,
+                valor: this.value
+            };
+            this.onchange = null;
+            eventSelect(coluna, objectFinal);
+        };
+
+        select.onchange = function() {
+            var objectFinal = {
+                linhaId: linhaId,
+                dataId: dataId,
+                colum: columId,
+                text: text,
+                valor: this.value
+            };
+            this.onblur = null;
+            eventSelect(coluna, objectFinal);
+        };
+
+        coluna.innerHTML = "";
+        label.appendChild(select);
+        coluna.appendChild(label);
+        select.focus();
+        coluna.ondblclick = null;
+    };
+    
+    /**
+     * Função que aplica as regras para o evento de selecionar ou sair do campo
+     * @param {DON} don
+     * @param {Object} obj
+     * @returns {void}
+     */
+    var eventSelect = function(don, obj) {
+        var reformularLinha = {
+            selected: parseInt(obj.valor),
+            itens: object.rows[obj.linhaId].data[obj.colum].itens
+        };
+        
+        don.innerHTML = "";
+        var elemen = createSelected(reformularLinha);
+        elemen.ondblclick = function() {
+            onSelectEvent(elemen);
+        };
+        don.appendChild(elemen);
+        
+        callbackEdit(objectReturn(obj.text, reformularLinha, obj.colum, parseInt(obj.linhaId), obj.dataId));
+        if (callbackOnEdit)
+            callbackOnEdit(obj.text, object.rows[obj.linhaId].data[obj.colum].itens[obj.valor], obj.colum, obj.linhaId, obj.dataId);
     };
 
     /**
@@ -238,7 +344,13 @@ function GridElement() {
     var addMaskPersonalizada = function(mask, element) {
         MaskInput(mask, element);
     };
-
+    
+    /**
+     * Função que adiciona máscara padrão pelo tipo do elemento
+     * @param {String} type
+     * @param {DON} element
+     * @returns {void}
+     */
     var addMaskPadrao = function(type, element) {
         switch (type) {
             case "int":
