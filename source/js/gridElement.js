@@ -266,12 +266,12 @@ function GridElement() {
         var linhaId = parseInt(element.parentNode.parentNode.getAttribute('linha-id'));
         var dataId = parseInt(element.parentNode.parentNode.getAttribute('data-id'));
         var columId = parseInt(element.parentNode.getAttribute('colum-id'));
-        
+
         if (dataId === -1) {
             insertObject(element);
             return;
         }
-        
+
         var obj = object.rows[linhaId].data[columId];
         var text = obj.itens[obj.selected];
 
@@ -331,7 +331,7 @@ function GridElement() {
      */
     var eventSelect = function(don, obj) {
         var reformularLinha = {};
-        
+
         if (object.rows[obj.linhaId]) {
             reformularLinha = {
                 selected: parseInt(obj.valor),
@@ -356,7 +356,7 @@ function GridElement() {
         if (callbackOnEdit)
             callbackOnEdit(obj.text, object.rows[obj.linhaId].data[obj.colum].itens[obj.valor], obj.colum, obj.linhaId, obj.dataId);
     };
-    
+
     /**
      * Insere linha no objeto principal
      * @param {DON} don
@@ -365,7 +365,7 @@ function GridElement() {
     var insertObject = function(don) {
         var linha = don.parentNode.parentNode;
         var colunasDaLinha = linha.childNodes.length;
-        
+
         linha.setAttribute('data-id', linhaAddSemCustomizacao);
         var obj = {
             id: linhaAddSemCustomizacao,
@@ -421,6 +421,9 @@ function GridElement() {
                 break;
             case "flt":
                 MaskPadrao("9.9", element);
+                break;
+            case "mon":
+                MaskPadrao("R$9.9", element);
                 break;
             default:
                 MaskPadrao("a", element);
