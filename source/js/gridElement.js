@@ -291,7 +291,6 @@ function GridElement() {
 
             select.appendChild(option);
         }
-
         select.onblur = function() {
             var objectFinal = {
                 linhaId: linhaId,

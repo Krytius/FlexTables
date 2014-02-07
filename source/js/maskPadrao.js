@@ -22,7 +22,7 @@ function MaskPadrao(mask, element) {
                 regex = new RegExp(/.+/);
                 break;
         }
-
+        
         verificaElement(regex, mascaras);
     };
 
@@ -40,6 +40,7 @@ function MaskPadrao(mask, element) {
                 if (!teste)
                     value = value.slice(0, i);
             }
+            don.value =  value;
         } else {
             value = value.replace(idioma.moeda, "");
             for (var i = 0; i < value.length; i++) {
@@ -47,9 +48,10 @@ function MaskPadrao(mask, element) {
                 if (!teste)
                     value = value.slice(0, i);
             }
+            don.value = idioma.moeda + value;
         }
 
-        don.value = idioma.moeda + value;
+        
     };
 
     // Retorno init

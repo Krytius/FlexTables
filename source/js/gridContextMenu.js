@@ -33,7 +33,7 @@ function GridContextMenu() {
         linhaId = this.getAttribute('linha-id');
         dataId =  this.getAttribute('data-id');
         selectRow(this);
-        createContextMenu(e.y, e.x);
+        createContextMenu(e.pageY, e.pageX);
     };
     
     /**
