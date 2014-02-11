@@ -77,7 +77,11 @@ function GridMark() {
     this.selectRow = function() {
         if (linhaAnterior) {
             var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
-            elemet.className = elemet.className.replace(" select", "");
+            
+            if(elemet) {
+                elemet.className = elemet.className.replace(" select", "");
+            }
+            
             self.removeContext();
         }
         linhaSelectAtual = this.getAttribute("linha-id");
@@ -140,7 +144,11 @@ function GridMark() {
     var selectRow = function(element) {
         if (linhaAnterior) {
             var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
-            elemet.className = elemet.className.replace(" select", "");
+            
+            if(elemet) {
+                elemet.className = elemet.className.replace(" select", "");
+            }
+            
             self.removeContext();
         }
 
@@ -292,4 +300,3 @@ function GridMark() {
         return document.createElement(elem);
     };
 }
-;

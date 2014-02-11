@@ -151,7 +151,7 @@ function GridElement() {
             onInsertEvent(elemen, type);
             return;
         }
-
+        
         var input = document.createElement("input");
         input.type = type;
         input.className = "mw-content-text";
@@ -213,6 +213,7 @@ function GridElement() {
         var colunasDaLinha = linha.childNodes.length;
 
         linha.setAttribute('data-id', linhaAddSemCustomizacao);
+        linha.setAttribute('linha-id', object.rows.length);
         var obj = {
             id: linhaAddSemCustomizacao,
             data: []
