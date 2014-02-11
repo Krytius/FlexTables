@@ -26,6 +26,7 @@ function Grid(idDom) {
     var contextMenu = [];
     var colunasMask = [];
     var colunasFilter = [];
+    var eventCustomSearch;
 
     // Variavel de controle de tentativas
     var tentativas = 0;
@@ -53,7 +54,7 @@ function Grid(idDom) {
      */
     var igualaObjetos = function(json) {
         object = json;
-        gridFilter.init(element, json, colunas, colunasType, refreshGridOrganizacao);
+        gridFilter.init(element, json, colunas, colunasType, refreshGridOrganizacao, eventCustomSearch);
         gridElement.init(json, colunasMask, colunasType, colunasEvents);
         gridEvent.init(json, colunasEvents);
         gridMark.init(json);
@@ -237,6 +238,16 @@ function Grid(idDom) {
      */
     this.setColumsFilter = function(filter) {
         colunasFilter = filter;
+        return;
+    };
+    
+    /**
+     * Função que recebe evento custo do campo de busca do grid
+     * @param {Function} callback
+     * @return {void}
+     */
+    this.setSearchFilter = function(callback) {
+        eventCustomSearch = callback;
         return;
     };
     
@@ -508,6 +519,17 @@ function Grid(idDom) {
     this.getRowSelected = function() {
         var rowSelect = gridMark.getRowSelect();
         return rowSelect.rowSelect;
+    };
+
+    /**
+     * Clear dos filtros
+     * @param  {Function} callback
+     * @return {void}            
+     */
+    this.clearFilter = function(callback) {
+        var obj = gridFilter.clearFilter();
+        callback(obj.filtroId, obj.columId);
+        return;
     };
 
     /**

@@ -14,6 +14,7 @@ function GridFilter() {
 
     // Callbacks do filtro
     var callbackFiltro;
+    var customSearch;
 
     // Colunas do filtro selecionado
     var columSelecionado = {};
@@ -25,14 +26,16 @@ function GridFilter() {
      * @param {Array} col
      * @param {Array} type
      * @param {Function} callback
+     * @param {Function} custom
      * @returns {void}
      */
-    this.init = function(don, json, col, type, callback) {
+    this.init = function(don, json, col, type, callback, custom) {
         element = don;
         object = json;
         colunas = col;
         colunasType = type;
         callbackFiltro = callback;
+        customSearch = custom;
         return;
     };
 
@@ -68,7 +71,7 @@ function GridFilter() {
         var espaco = calculoEspacamento();
         var elementButtons = constructButtons(espaco);
         var elementSearch = constructSearch();
-        
+
         div.appendChild(elementButtons);
         div.appendChild(elementSearch);
         element.appendChild(div);
@@ -105,8 +108,17 @@ function GridFilter() {
             button.setAttribute('filtro-id', i);
             button.setAttribute('colum-id', filtros[i][1]);
             button.setAttribute('title', colunas[filtros[i][1]]);
-            button.style.width = tamanhoButtons + "px";
-            button.onclick = selectFilter;
+
+            if (!filtros[i][0].width)
+                button.style.width = tamanhoButtons + "px";
+            else
+                button.style.width = custonsWidth(espaco, tamanhoButtons, quantButtons, filtros[i][0].width);
+
+            if (!filtros[i][0].event) {
+                button.onclick = selectFilter;
+            } else {
+                button.onclick = custonsEvent;
+            }
 
             var icon = create('i');
             icon.className = 'mw-icon';
@@ -126,6 +138,36 @@ function GridFilter() {
     };
 
     /**
+     * Função que permite o desenvolvedor customizar tamanho da aba
+     * @param  {integer} espaco         
+     * @param  {integer} tamanhoButtons 
+     * @param  {integer} quantButtons   
+     * @param  {integer} tamanhoCustom  
+     * @return {Strig}                Valor em px
+     */
+    var custonsWidth = function(espaco, tamanhoButtons, quantButtons, tamanhoCustom) {
+        var contagemAsterisco = 0;
+        var contagemPadrao = 0;
+        for (var i = 0; i < filtros.length; i++) {
+            if (filtros[i][0].width) {
+                if (filtros[i][0].width === "*") {
+                    contagemAsterisco++;
+                } else {
+                    espaco -= filtros[i][0].width;
+                }
+            } else {
+                espaco -= tamanhoButtons;
+            }
+        }
+
+        if (tamanhoCustom === "*")
+            return espaco / contagemAsterisco + 'px';
+        else
+            return filtros[i][0].width + 'px';
+
+    };
+
+    /**
      * Função que faz a construção do input de busca do grid e seus eventos
      * @returns {DON|GridFilter.constructSearch.div|Element}
      */
@@ -133,30 +175,23 @@ function GridFilter() {
         var div = create('div');
         div.className = 'mw-search';
         div.style.width = "225px";
-        div.onclick = verificaFiltro;
 
         var input = create('input');
         input.className = 'mw-filter-input';
         input.type = "text";
-        input.onkeyup = filter;
+
+        if(!customSearch) {
+        	div.onclick = verificaFiltro;
+            input.onkeyup = filter;
+        } else {
+            input.onkeyup = customFilter;
+        }
 
         var divBusca = create('div');
         divBusca.className = 'mw-filter-div';
 
         div.appendChild(input);
         div.appendChild(divBusca);
-        return div;
-    };
-
-    /**
-     * Função que cria o botão de emit do Grid
-     * @returns {GridFilter.contructButtonEmitSearch.div|DON|Element}
-     */
-    var contructButtonEmitSearch = function() {
-        var div = create('div');
-        div.className = 'mw-emit';
-        div.style.width = '25px';
-
         return div;
     };
 
@@ -174,6 +209,25 @@ function GridFilter() {
         }
 
         selector('.mw-filter-input').focus();
+
+        columSelecionado.columId = colum;
+        columSelecionado.filtroId = filtro;
+    };
+
+    /**
+     * Custons Events Selects Filter
+     * @return {void}
+     */
+    var custonsEvent = function() {
+        var colum = this.getAttribute('colum-id');
+        var filtro = this.getAttribute('filtro-id');
+        this.className += ' selected';
+        if (columSelecionado.columId) {
+            var elemento = this.parentNode.childNodes[columSelecionado.filtroId];
+            if (elemento)
+                elemento.className = elemento.className.replace(' selected', '');
+        }
+        filtros[filtro][0].event();
 
         columSelecionado.columId = colum;
         columSelecionado.filtroId = filtro;
@@ -210,6 +264,16 @@ function GridFilter() {
 
         columSelecionado.columId = colum;
         columSelecionado.filtroId = filtro;
+    };
+    
+    /**
+     * Função que reproduz o evento custom do campo de busca
+     * @param {Event} e
+     * @returns {void}
+     */
+    var customFilter = function(e) {
+        customSearch(e.keyCode, this.value);
+        return;
     };
 
     /**
@@ -284,15 +348,16 @@ function GridFilter() {
     };
 
     this.clearFilter = function() {
+        var retorno = columSelecionado;
         var elemento = selector('.mw-filter .mw-selects').childNodes[columSelecionado.filtroId];
-        if(elemento)
+        if (elemento)
             elemento.className = elemento.className.replace(' selected', '');
-        
+
         objetoNovo = {};
         filtrado = [];
         columSelecionado = {};
         selector('.mw-filter-input').value = "";
-        return;
+        return retorno;
     };
 
     /**
