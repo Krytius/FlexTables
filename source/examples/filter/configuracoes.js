@@ -7,6 +7,7 @@ window.onload = function() {
     grid.setColumsEvents(["edit", "noEvent", "number"]);
     grid.setColumsFilter([{
         status: true,
+        title: 'Mercado e Produto',
         width: '*',
         icon: 'img/mercado.png',
         event: function() {

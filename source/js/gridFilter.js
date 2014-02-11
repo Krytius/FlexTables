@@ -126,8 +126,17 @@ function GridFilter() {
 
             var text = create('span');
             text.className = 'mw-text';
-            text.style.width = (tamanhoButtons - 40) + 'px';
-            text.innerHTML = colunas[filtros[i][1]];
+
+            if (!filtros[i][0].width) {
+            	text.style.width = (tamanhoButtons - 40) + 'px';
+            } else {
+            	text.style.width = (parseInt(custonsWidth(espaco, tamanhoButtons, quantButtons, filtros[i][0].width)) - 40) + 'px';
+            }
+
+            if(!filtros[i][0].title)
+            	text.innerHTML = colunas[filtros[i][1]];
+            else
+            	text.innerHTML = filtros[i][0].title;
 
             button.appendChild(icon);
             button.appendChild(text);
@@ -163,7 +172,7 @@ function GridFilter() {
         if (tamanhoCustom === "*")
             return espaco / contagemAsterisco + 'px';
         else
-            return filtros[i][0].width + 'px';
+            return tamanhoCustom + 'px';
 
     };
 
