@@ -45,7 +45,7 @@ function GridMark() {
     };
 
     /**
-     * Função que retorna linha selecionada e linha selecionada anteriorMente
+     * Função que retorna linha selecionada e linha selecionada anterior
      * @return {[type]} [description]
      */
     this.getRowSelect = function() {

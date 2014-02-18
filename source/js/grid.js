@@ -36,6 +36,7 @@ function Grid(idDom) {
     // Callbacks
     var callbackOnDeleteRow;
     var callbackAlterObject;
+    var callbackOnDbClick;
 
     /**
      * Função que inicia a montagem do Grid
@@ -62,7 +63,7 @@ function Grid(idDom) {
         if (callbackAlterObject)
             callbackAlterObject(json);
     };
-    
+
     /**
      * Função que iguala o objeto novo a todas as classes
      * @param {Object} json
@@ -240,7 +241,7 @@ function Grid(idDom) {
         colunasFilter = filter;
         return;
     };
-    
+
     /**
      * Função que recebe evento custo do campo de busca do grid
      * @param {Function} callback
@@ -250,7 +251,7 @@ function Grid(idDom) {
         eventCustomSearch = callback;
         return;
     };
-    
+
     /**
      * Função que constroí filtro se houver parâmetros de filtros
      * @returns {void}
@@ -278,17 +279,17 @@ function Grid(idDom) {
      */
     var header = function() {
         var quant = colunas.length;
-        
+
         var div = create('div');
         div.className = "mw-header";
-        
+
         var table = create('table');
         table.style.width = element.offsetWidth - 17 + "px";
-        
+
         var tr = create('tr');
-        
+
         for (var i = 0; i < quant; i++) {
-            
+
             var td = create('td');
             td.width = colunasWidth[i];
             td.setAttribute('data-id', i);
@@ -299,11 +300,11 @@ function Grid(idDom) {
                     refreshGridOrganizacao(objectJson);
                 });
             };
-            
+
             var divTd = create('div');
             divTd.className = "mw-header-td-div";
             divTd.innerHTML = colunas[i];
-            
+
             td.appendChild(divTd);
             tr.appendChild(td);
         }
@@ -319,19 +320,19 @@ function Grid(idDom) {
      * @return {void}
      */
     var content = function(objectJson) {
-        
+
         var quantColunas = colunas.length;
         var quantLinhas = objectJson.rows.length;
-        
+
         var div = create('div');
         div.className = "mw-content";
         div.style.height = (element.offsetHeight - 42 - ((gridFilter.getColumsFilter().length > 0) ? 25 : 0)) + "px";
         div.tabIndex = "1";
         div.onkeydown = gridMark.movimentLine;
-        
+
         var table = create('table');
         table.style.width = element.offsetWidth - 17 + "px";
-        
+
         if (contextMenu.length > 0) {
             window.onclick = gridMark.removeContext;
         }
@@ -343,6 +344,10 @@ function Grid(idDom) {
             tr.setAttribute('data-id', objectJson.rows[l].id);
             tr.onclick = gridMark.selectRow;
             
+            if(callbackOnDbClick) {
+                tr.ondblclick = rowDbClick;
+            }
+
             if (contextMenu.length > 0) {
                 tr.oncontextmenu = gridContextMenu.vicContextMenu;
             }
@@ -353,12 +358,12 @@ function Grid(idDom) {
                 td.className = "mw-content-td";
                 td.setAttribute('colum-id', c);
                 td.width = colunasWidth[c];
-                
+
                 var divTd = gridElement.createColumType(colunasEvents[c], objectJson.rows[l].data[c], colunasWidth[c], c);
                 gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
                     igualaObjetos(obj);
                 });
-                
+
                 td.appendChild(divTd);
                 tr.appendChild(td);
             }
@@ -368,12 +373,12 @@ function Grid(idDom) {
         table.appendChild(tr);
         div.appendChild(table);
         element.appendChild(div);
-        
+
         // Eventos
         var objetosCallbacks = {
             addRow: self.addRow
         };
-        
+
         gridMark.parametrosPaginacao(div, objetosCallbacks);
     };
 
@@ -389,7 +394,7 @@ function Grid(idDom) {
     this.addRow = function(objetoLinha) {
         var quantColunas = colunas.length;
         var custom = false;
-        
+
         if (objetoLinha.itensColunas && objetoLinha.dataId) {
             custom = true;
             object.rows.push({
@@ -403,19 +408,19 @@ function Grid(idDom) {
         tr.className = "mw-content-tr";
         tr.setAttribute('linha-id', parseInt(selector('div.mw-content').childNodes[0].childNodes.length));
         tr.onclick = gridMark.selectRow;
-        
+
         if (custom)
             tr.setAttribute('data-id', parseInt(objetoLinha.dataId));
         else
             tr.setAttribute('data-id', "-1");
-        
+
         for (var c = 0; c < quantColunas; c++) {
 
             var td = create('td');
             td.className = "mw-content-td";
             td.setAttribute('colum-id', c);
             td.width = colunasWidth[c];
-            
+
             var valor;
             if (custom) {
                 valor = objetoLinha.itensColunas[c];
@@ -428,18 +433,18 @@ function Grid(idDom) {
                     valor = idioma['newRowNumber'];
                 }
             }
-            
+
             var divTd = gridElement.createColumType(colunasEvents[c], valor, colunasWidth[c] - 10, c);
             gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
                 igualaObjetos(obj);
             });
-            
+
             td.appendChild(divTd);
             tr.appendChild(td);
         }
 
         var table = selector('.mw-content table');
-        
+
         if (custom) {
             table.insertBefore(tr, table.childNodes[objetoLinha.position]);
             element.childNodes[1].scrollTop = (objetoLinha.position * 42) - 42;
@@ -459,17 +464,17 @@ function Grid(idDom) {
      * @returns {void}
      */
     this.deleteRow = function(linhaId) {
-        
+
         var table = selector('.mw-content table');
         var scrollTop = selector('.mw-content').scrollTop;
         var dataId = table.childNodes[linhaId].getAttribute('data-id');
-        
+
         table.removeChild(table.childNodes[linhaId]);
         object.rows.splice(linhaId, 1);
         self.refreshGrid(object);
         igualaObjetos(object);
         selector('.mw-content').scrollTop = scrollTop;
-        
+
         // Verificação se linha deletada não é a marcada
         if (linhaId === gridMark.getLinhaAnterior()) {
             gridMark.setLinhaAnterior(null);
@@ -485,15 +490,15 @@ function Grid(idDom) {
      * @returns {void}
      */
     this.deleteRowId = function(dataId) {
-        
+
         var linhaId = selector('tr.mw-content-tr[data-id="' + dataId + '"]').getAttribute('linha-id');
         var scrollTop = selector('.mw-content').scrollTop;
-        
+
         object.rows.splice(linhaId, 1);
         self.refreshGrid(object);
         igualaObjetos(object);
         selector('.mw-content').scrollTop = scrollTop;
-        
+
         // Verificação se linha deletada não é a marcada
         if (linhaId === gridMark.getLinhaAnterior()) {
             gridMark.setLinhaAnterior(null);
@@ -519,6 +524,12 @@ function Grid(idDom) {
     this.getRowSelected = function() {
         var rowSelect = gridMark.getRowSelect();
         return rowSelect.rowSelect;
+    };
+    
+    var rowDbClick = function() {
+        var linhaId = this.getAttribute('linha-id');
+        var dataId = this.getAttribute('data-id');
+        callbackOnDbClick(linhaId, dataId);
     };
 
     /**
@@ -554,6 +565,9 @@ function Grid(idDom) {
                 break;
             case "onObject":
                 setMonitoringAlterObject(callback);
+                break;
+            case "onDbClickRow":
+                setDbClickRow(callback);
                 break;
         }
     };
@@ -599,6 +613,11 @@ function Grid(idDom) {
      */
     var setMonitoringAlterObject = function(callback) {
         callbackAlterObject = callback;
+        return;
+    };
+
+    var setDbClickRow = function(callback) {
+        callbackOnDbClick = callback;
         return;
     };
 
