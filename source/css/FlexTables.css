@@ -197,6 +197,15 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
+.mw-content .mw-content-clear {
+    background-color: #eeeeee;
+    font-family: Verdana;
+    font-size: 25px;
+    color: #535353;
+    text-shadow: 1px 1px 1px #aaaaaa;
+    text-align: center;
+}
+
 .mw-content table { 
     border-spacing: 0;
     overflow-x: hidden;

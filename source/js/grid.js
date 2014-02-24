@@ -212,7 +212,7 @@ function Grid(idDom) {
      * Função que seta o evento que pode ocorrer na coluna
      * @param {Array} events tipos dos eventos da coluna
      * @returns {void}
-     * 
+     *
      * @description noEdit = Sem evento / edit = textBox
      */
     this.setColumsEvents = function(events) {
@@ -221,9 +221,9 @@ function Grid(idDom) {
     };
 
     /**
-     * Função que seta o objeto com menu icone e callback, 
+     * Função que seta o objeto com menu icone e callback,
      * para o menu de contexto.
-     * 
+     *
      * @param {Object} menus
      * @returns {void}
      */
@@ -330,63 +330,76 @@ function Grid(idDom) {
         div.tabIndex = "1";
         div.onkeydown = gridMark.movimentLine;
 
-        var table = create('table');
-        table.style.width = element.offsetWidth - 17 + "px";
+        if (quantLinhas > 0) {
 
-        if (contextMenu.length > 0) {
-            window.onclick = gridMark.removeContext;
-        }
-
-        for (var l = 0; l < quantLinhas; l++) {
-            var tr = create('tr');
-            tr.className = "mw-content-tr";
-            tr.setAttribute('linha-id', l);
-            tr.setAttribute('data-id', objectJson.rows[l].id);
-            tr.onclick = gridMark.selectRow;
-            
-            if(callbackOnDbClick) {
-                tr.ondblclick = rowDbClick;
-            }
+            var table = create('table');
+            table.style.width = element.offsetWidth - 17 + "px";
 
             if (contextMenu.length > 0) {
-                tr.oncontextmenu = gridContextMenu.vicContextMenu;
+                window.onclick = gridMark.removeContext;
             }
 
-            for (var c = 0; c < quantColunas; c++) {
+            for (var l = 0; l < quantLinhas; l++) {
+                var tr = create('tr');
+                tr.className = "mw-content-tr";
+                tr.setAttribute('linha-id', l);
+                tr.setAttribute('data-id', objectJson.rows[l].id);
+                tr.onclick = gridMark.selectRow;
 
-                var td = create('td');
-                td.className = "mw-content-td";
-                td.setAttribute('colum-id', c);
-                td.width = colunasWidth[c];
+                if (callbackOnDbClick) {
+                    tr.ondblclick = rowDbClick;
+                }
 
-                var divTd = gridElement.createColumType(colunasEvents[c], objectJson.rows[l].data[c], colunasWidth[c], c);
-                gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
-                    igualaObjetos(obj);
-                });
+                if (contextMenu.length > 0) {
+                    tr.oncontextmenu = gridContextMenu.vicContextMenu;
+                }
 
-                td.appendChild(divTd);
-                tr.appendChild(td);
+                for (var c = 0; c < quantColunas; c++) {
+
+                    var td = create('td');
+                    td.className = "mw-content-td";
+                    td.setAttribute('colum-id', c);
+                    td.width = colunasWidth[c];
+
+                    var divTd = gridElement.createColumType(colunasEvents[c], objectJson.rows[l].data[c], colunasWidth[c], c);
+                    gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
+                        igualaObjetos(obj);
+                    });
+
+                    td.appendChild(divTd);
+                    tr.appendChild(td);
+                }
+                table.appendChild(tr);
             }
+
             table.appendChild(tr);
+            div.appendChild(table);
+            element.appendChild(div);
+
+            // Eventos
+            var objetosCallbacks = {
+                addRow: self.addRow
+            };
+
+            gridMark.parametrosPaginacao(div, objetosCallbacks);
+        } else {
+            var div2 = create('div');
+            div2.className = 'mw-content-clear';
+            div2.style.width = element.offsetWidth - 17 + "px";
+            div2.style.height = (element.offsetHeight - 42 - ((gridFilter.getColumsFilter().length > 0) ? 25 : 0)) + "px";
+            div2.style.lineHeight = (element.offsetHeight - 42 - ((gridFilter.getColumsFilter().length > 0) ? 25 : 0)) + "px";
+            div2.innerHTML = idioma[000];
+
+            div.appendChild(div2);
+            element.appendChild(div);
         }
-
-        table.appendChild(tr);
-        div.appendChild(table);
-        element.appendChild(div);
-
-        // Eventos
-        var objetosCallbacks = {
-            addRow: self.addRow
-        };
-
-        gridMark.parametrosPaginacao(div, objetosCallbacks);
     };
 
     /**
      * Função que adiciona uma linha ao grid
      * @param {object} objetoLinha
      * @returns {void}
-     * 
+     *
      * @description {
      *  itensColunas: [], dataId: 0, position: 0
      * }
@@ -525,7 +538,7 @@ function Grid(idDom) {
         var rowSelect = gridMark.getRowSelect();
         return rowSelect.rowSelect;
     };
-    
+
     var rowDbClick = function() {
         var linhaId = this.getAttribute('linha-id');
         var dataId = this.getAttribute('data-id');
@@ -535,7 +548,7 @@ function Grid(idDom) {
     /**
      * Clear dos filtros
      * @param  {Function} callback
-     * @return {void}            
+     * @return {void}
      */
     this.clearFilter = function(callback) {
         var obj = gridFilter.clearFilter();
