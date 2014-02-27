@@ -281,7 +281,7 @@ function GridFilter() {
      * @returns {void}
      */
     var customFilter = function(e) {
-        customSearch(e.keyCode, this.value);
+        customSearch(e.keyCode, this.value, e);
         return;
     };
 

@@ -557,6 +557,14 @@ function Grid(idDom) {
     };
 
     /**
+     * Função que retorna o objeto principal do gird
+     * @return {Object}
+     */
+    this.getObject = function() {
+        return object;
+    }
+
+    /**
      * Monitora eventos do grid
      * @param {String} event
      * @param {Function} callback
