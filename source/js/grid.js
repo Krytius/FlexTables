@@ -12,15 +12,18 @@ function Grid(idDom) {
     //
     //
     var gridCreate = new GridCreate();
+    var gridEvent = new GridEvent();
+    var gridMark = new GridMark();
 
     //  
     //  
     //  Variaveis Globais
     //  
     //
-    
+
     var constante = {
-        LARGURA_SCROLL: 17
+        LARGURA_SCROLL: 17,
+        BORDAS: 1
     };
 
     var element = document.getElementById(idDom);
@@ -40,16 +43,16 @@ function Grid(idDom) {
     //  Getters / Setters
     //
     //
-    
+
     // ========================================
     //  Constantes
     // ========================================
-    var setConstantes = function (consts) {
+    var setConstantes = function(consts) {
         constante = consts;
         return;
     };
-    
-    var getConstantes = function () {
+
+    var getConstantes = function() {
         return constante;
     };
 
@@ -88,7 +91,7 @@ function Grid(idDom) {
     var getColunasWidth = function() {
         return colunasLargura;
     };
-    
+
     // ========================================
     //  Alinhamento Colunas
     // ========================================
@@ -116,12 +119,20 @@ function Grid(idDom) {
     // ========================================
     //  Eventos da Coluna
     // ========================================
-    this.setColunasEventos = function(events) {
+    var setColunasEventos = function(events) {
         colunasEventos = events;
         return;
     };
 
+    var getColunasEventos = function() {
+        return colunasEventos;
+    };
 
+    //
+    //
+    //  Procedimentos
+    //
+    //
 
     /**
      * Função que inicia a procedimento de montagem do Grid
@@ -133,7 +144,7 @@ function Grid(idDom) {
         initGrid();
     };
 
-    
+
     /**
      * Função que inicia processo de plotagem do grid
      * @return {void}
@@ -147,18 +158,32 @@ function Grid(idDom) {
                     initGrid();
                 }, 30);
                 return;
-            } else if(!(colunasLargura.length > 0)) {
+            } else if (!(colunasLargura.length > 0)) {
                 setLarguraColunasIgual();
             }
-            
+
             setLarguraColunas(getColunasWidth());
-            gridCreate.init(retorno);
+            iniciarClasses(retorno);
         } else {
             setTimeout(function() {
                 console.log(idioma[001]);
                 initGrid();
             }, 300);
         }
+    };
+
+    /**
+     * Inicia Classes
+     * 
+     * @description ::  Inicia todas as depêndencias do plugin
+     * 
+     * @param {Object} retorno
+     * @returns {void}
+     */
+    var iniciarClasses = function(retorno) {
+        gridCreate.init(retorno);
+        gridEvent.init(retorno);
+        gridMark.init(retorno);
     };
 
     /**
@@ -173,13 +198,13 @@ function Grid(idDom) {
     var setLarguraColunas = function(wColums) {
         // Global
         colunasLargura = [];
-        
+
         // Procedimento
         var quant = wColums.length;
         var tamanhoDisponivel = element.offsetWidth - constante.LARGURA_SCROLL;
         var quantidadeAsterisco = 0;
         var tamanhoAsterisco = 0;
-        
+
         // =====================================================================
         // Cálculo da Quantidade de Asterisco mais a quantidade de espaço que
         // sobrou.
@@ -191,9 +216,9 @@ function Grid(idDom) {
                 tamanhoDisponivel -= parseInt(wColums[i]);
             }
         }
-        
+
         tamanhoAsterisco = (tamanhoDisponivel / quantidadeAsterisco);
-        
+
         for (var i = 0; i < quant; i++) {
             if (wColums[i] === "*") {
                 colunasLargura.push(tamanhoAsterisco);
@@ -216,7 +241,7 @@ function Grid(idDom) {
     var setLarguraColunasIgual = function() {
         // Global
         colunasLargura = [];
-        
+
         // Procedimento
         var quant = colunas.length;
         var tamanho = element.offsetWidth - 17;
@@ -224,7 +249,7 @@ function Grid(idDom) {
         for (var i = 0; i < quant; i++) {
             colunasLargura.push(tamanhoIgual);
         }
-        
+
         return colunasLargura;
     };
 
@@ -251,88 +276,13 @@ function Grid(idDom) {
         gridFilter.constructFilter();
     };
 
-    /**
-     * Função que adiciona uma linha ao grid
-     * @param {object} objetoLinha
-     * @returns {void}
-     *
-     * @description {
-     *  itensColunas: [], dataId: 0, position: 0
-     * }
-     */
-    this.addRow = function(objetoLinha) {
-        var quantColunas = colunas.length;
-        var custom = false;
-
-        if (objetoLinha.itensColunas && objetoLinha.dataId) {
-            custom = true;
-            object.rows.push({
-                id: objetoLinha.dataId,
-                data: objetoLinha.itensColunas
-            });
-            igualaObjetos(object);
-        }
-
-        var tr = create('tr');
-        tr.className = "mw-content-tr";
-        tr.setAttribute('linha-id', parseInt(selector('div.mw-content').childNodes[0].childNodes.length));
-        tr.onclick = gridMark.selectRow;
-
-        if (custom)
-            tr.setAttribute('data-id', parseInt(objetoLinha.dataId));
-        else
-            tr.setAttribute('data-id', "-1");
-
-        for (var c = 0; c < quantColunas; c++) {
-
-            var td = create('td');
-            td.className = "mw-content-td";
-            td.setAttribute('colum-id', c);
-            td.width = colunasWidth[c];
-
-            var valor;
-            if (custom) {
-                valor = objetoLinha.itensColunas[c];
-            } else {
-                if (colunasType[c] === "str") {
-                    valor = idioma['newRow'];
-                } else if (colunasType[c] === "sle") {
-                    valor = object.rows[0].data[c];
-                } else {
-                    valor = idioma['newRowNumber'];
-                }
-            }
-
-            var divTd = gridElement.createColumType(colunasEvents[c], valor, colunasWidth[c] - 10, c);
-            gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
-                igualaObjetos(obj);
-            });
-
-            td.appendChild(divTd);
-            tr.appendChild(td);
-        }
-
-        var table = selector('.mw-content table');
-
-        if (custom) {
-            table.insertBefore(tr, table.childNodes[objetoLinha.position]);
-            element.childNodes[1].scrollTop = (objetoLinha.position * 42) - 42;
-            gridMark.selectionRowForce(tr);
-        } else {
-            table.appendChild(tr);
-            element.childNodes[1].scrollTop = table.offsetHeight;
-        }
-
-        gridLinhaSup++;
-        return tr;
-    };
 
     /**
      * Função que apaga linha pela numero do filho
      * @param {Interger} linhaId
      * @returns {void}
      */
-    this.deleteRow = function(linhaId) {
+    var deleteRow = function(linhaId) {
 
         var table = selector('.mw-content table');
         var scrollTop = selector('.mw-content').scrollTop;
@@ -358,7 +308,7 @@ function Grid(idDom) {
      * @param {Interger} dataId
      * @returns {void}
      */
-    this.deleteRowId = function(dataId) {
+    var deleteRowId = function(dataId) {
 
         var linhaId = selector('tr.mw-content-tr[data-id="' + dataId + '"]').getAttribute('linha-id');
         var scrollTop = selector('.mw-content').scrollTop;
@@ -381,7 +331,7 @@ function Grid(idDom) {
      * Id Selecionado
      * @return {Interger} Id selecionado Representa Id do objeto
      */
-    this.getRowSelectedId = function() {
+    var getRowSelectedId = function() {
         var rowSelect = gridMark.getRowSelect();
         return rowSelect.idSelect;
     };
@@ -390,7 +340,7 @@ function Grid(idDom) {
      * Linha Selecionada
      * @return {Interger} Linha selecionada Representa array
      */
-    this.getRowSelected = function() {
+    var getRowSelected = function() {
         var rowSelect = gridMark.getRowSelect();
         return rowSelect.rowSelect;
     };
@@ -406,63 +356,10 @@ function Grid(idDom) {
      * @param  {Function} callback
      * @return {void}
      */
-    this.clearFilter = function(callback) {
+    var clearFilter = function(callback) {
         var obj = gridFilter.clearFilter();
         callback(obj.filtroId, obj.columId);
         return;
-    };
-    
-    /**
-     * Monitora eventos do grid
-     * @param {String} event
-     * @param {Function} callback
-     * @returns {void}
-     */
-    this.setMonitorEvents = function(event, callback) {
-        switch (event) {
-            case "onEdit":
-                gridElement.setCallbackOnEdit(callback);
-                break;
-            case "onCheck":
-                gridElement.setCallbackOnCheck(callback);
-                break;
-            case "onKeyPress":
-                gridMark.setCallbackOnKeyPress(callback);
-                break;
-            case "onDeleteRow":
-                setCallbackOnDeleteRow(callback);
-                break;
-            case "onObject":
-                setMonitoringAlterObject(callback);
-                break;
-            case "onDbClickRow":
-                setDbClickRow(callback);
-                break;
-        }
-    };
-
-    /**
-     * Atualiza grid
-     * @param {Object} objectJson
-     * @returns {void}
-     */
-    this.refreshGrid = function(objectJson) {
-        igualaObjetos(objectJson);
-        var contentElemt = selector('.mw-content');
-        element.removeChild(contentElemt);
-        content(objectJson);
-    };
-
-    /**
-     * Função que atualiza grid sem alterar objeto
-     * @param {Object} objectJson
-     * @returns {void}
-     */
-    var refreshGridOrganizacao = function(objectJson) {
-        var contentElemt = selector('.mw-content');
-        element.removeChild(contentElemt);
-        content(objectJson);
-        igualaObjetosSemAlterarOPrincipal(objectJson);
     };
 
     /**
@@ -522,15 +419,21 @@ function Grid(idDom) {
         getColunasAlinhamento: getColunasAlinhamento,
         setColunasTipo: setColunasTipo,
         getColunasTipo: getColunasTipo,
+        setColunasEventos: setColunasEventos,
+        getColunasEventos: getColunasEventos,
         getConstantes: getConstantes,
-        
         // Manipulação de DON
         element: element,
         $: selector,
         create: create,
-        
         // Classes
-        gridCreate: gridCreate
+        gridCreate: gridCreate,
+        gridEvent: gridEvent,
+        gridMark: gridMark,
+        // Eventos
+        adicionaLinha: gridCreate.adicionaLinha,
+        // Monitor de Eventos
+        monitorDeEventos: gridEvent.monitorDeEventos
     };
 
     return retorno;

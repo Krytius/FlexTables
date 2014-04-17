@@ -1,40 +1,160 @@
 function GridEvent() {
 
-    // Globais
-    var object;
+    //
+    //
+    //  Globais
+    //
+    //
+
+    var $, create, element, object, constante;
+    var colunas, eventos, tipo, largura;
     var objetoOrdenar = {id: "", ordenacao: ""};
-    var colunEvent = [];
+    var entrou = false;
 
     // Cache dos Objetos
     var asc = null;
     var desc = null;
 
-    /**
-     * Function que inicia o objeto do grid
-     * @param {Object} obj
-     * @returns {void}
-     */
-    this.init = function(obj, events) {
-        object = obj;
-        colunEvent = events;
-        asc = null;
-        desc = null;
+    // Callbacks
+    var editaCallback;
+
+    //
+    //
+    //  Getters e Setters
+    //
+    //
+
+    //  ===================================
+    //  Editar Evento
+    //  ===================================
+    var setEditaCallback = function(callback) {
+        editaCallback = callback;
+        return;
     };
 
+    var getEditaCallback = function() {
+        return editaCallback;
+    };
+
+    //
+    //
+    //  Procedimentos
+    //
+    //
+
     /**
-     * Função que ordena as colunas do grid
-     * @param {Object} elem
-     * @param {Object} json
+     * Init
+     * 
+     * @description :: Inicialização do módulo e procedimento de DON do plugin
+     *                 grid
+     * 
+     * @param {Object} retorno
+     * @returns {void}
+     */
+    var init = function(retorno) {
+        // =====================================================================
+        // Métodos Globais;
+        // =====================================================================
+        object = retorno;
+        element = retorno.element;
+        constante = retorno.getConstantes();
+        $ = retorno.$;
+        create = retorno.create;
+        eventos = retorno.getColunasEventos();
+        colunas = retorno.getColunas();
+        tipo = retorno.getColunasTipo();
+        largura = retorno.getLarguraColunas();
+    };
+
+
+    /**
+     * MonitorDeEventos
+     * 
+     * @description :: Monitora eventos do grid
+     * 
+     * @param {String} event
      * @param {Function} callback
      * @returns {void}
      */
-    this.ordenar = function(elem, callback) {
-        var id = elem.getAttribute('data-id');
-        var type = elem.getAttribute('type-coluna');
+    var monitorDeEventos = function(event, callback) {
+        switch (event) {
+            case "onAdicionar":
+                object.gridCreate.setAdicionaCallback(callback);
+                break;
+            case "onEditar":
+                setEditaCallback(callback);
+                break;
+//            case "onCheck":
+//                gridElement.setCallbackOnCheck(callback);
+//                break;
+//            case "onKeyPress":
+//                gridMark.setCallbackOnKeyPress(callback);
+//                break;
+//            case "onDeleteRow":
+//                setCallbackOnDeleteRow(callback);
+//                break;
+//            case "onObject":
+//                setMonitoringAlterObject(callback);
+//                break;
+//            case "onDbClickRow":
+//                setDbClickRow(callback);
+//                break;
+        }
+    };
+
+    //
+    //
+    //  Manipulação de DON
+    //
+    //
+    
+    /**
+     * TextField
+     * 
+     * @description ::  Função que cria o textfield para edição da linha
+     * 
+     * @returns {GridEvent.textfield}
+     */
+    var textfield = function() {
+        var valor = this.innerHTML;
+        var linhaID = this.parentNode.parentNode.getAttribute('linha-id');
+        var dataID = this.parentNode.parentNode.getAttribute('data-id');
+        var colunaID = this.parentNode.getAttribute('colum-id');
+
+        // Criação Textfield
+        var input = create("input");
+        input.type = "text";
+        input.style.width = (largura[colunaID] - 7) + "px";
+        input.className = "mw-content-text";
+        input.value = valor;
+        input.setAttribute('valor', valor);
+        input.setAttribute('linha-id', linhaID);
+        input.setAttribute('data-id', dataID);
+        input.setAttribute('coluna-id', colunaID);
+        input.onblur = terminoEdicao;
+        input.onkeyup = terminoEdicao;
+
+        this.innerHTML = "";
+        this.appendChild(input);
+        this.ondblclick = null;
+
+        input.focus();
+    };
+
+    /**
+     * Ordenar
+     * 
+     * @description ::  Função que ordena as colunas do grid
+     * 
+     * @returns {void}
+     */
+    var ordenar = function() {
+        var id = this.getAttribute('data-id');
+        var type = tipo[id];
         var idAntigo = objetoOrdenar.id;
         var antigaOrdenacao = objetoOrdenar.ordenacao;
 
-        if (colunEvent[parseInt(id)] !== "select") {
+        if (eventos[parseInt(id)] !== "select") {
             if (idAntigo === id && antigaOrdenacao === "ASC") {
                 objetoOrdenar.ordenacao = "DESC";
             } else if (idAntigo === id && antigaOrdenacao === "DESC") {
@@ -44,42 +164,45 @@ function GridEvent() {
                 objetoOrdenar.id = id;
             }
 
-            if (selector("#ordenacao[data-id='" + id + "']")) {
-                var element = document.getElementById("ordenacao");
-                element.className = objetoOrdenar.ordenacao;
+            if ($("#ordenacao[data-id='" + id + "']")) {
+                var elemento = $("#ordenacao");
+                elemento.className = objetoOrdenar.ordenacao;
             } else {
                 if (idAntigo !== id && idAntigo) {
-                    var elementAntigo = selector("#ordenacao[data-id='" + idAntigo + "']");
+                    var elementAntigo = $("#ordenacao[data-id='" + idAntigo + "']");
                     var paiElmentoAntigo = elementAntigo.parentNode;
                     paiElmentoAntigo.removeChild(elementAntigo);
                 }
 
-                var order = document.createElement('div');
+                var order = create('div');
                 order.className = objetoOrdenar.ordenacao;
                 order.id = "ordenacao";
                 order.setAttribute('data-id', id);
 
-                elem.appendChild(order);
+                this.childNodes[0].appendChild(order);
             }
 
-            var objectJson = organizarJson(object, type, id);
+            var objectJson = organizarJson(object.getObject(), type, id);
 
             if ((!asc && objetoOrdenar.ordenacao === "ASC") || (id !== idAntigo && objetoOrdenar.ordenacao === "ASC")) {
                 asc = objectJson;
-                callback(asc);
+                object.gridCreate.refresh(asc)
             } else if (asc && objetoOrdenar.ordenacao === "ASC") {
-                callback(asc);
+                object.gridCreate.refresh(asc);
             } else if ((!desc && objetoOrdenar.ordenacao === "DESC") || (id !== idAntigo && objetoOrdenar.ordenacao === "DESC")) {
                 desc = objectJson;
-                callback(desc);
+                object.gridCreate.refresh(desc);
             } else if (desc && objetoOrdenar.ordenacao === "DESC") {
-                callback(desc);
+                object.gridCreate.refresh(desc);
             }
         }
     };
 
     /**
-     * Função que organiza o objeto original
+     * OrganizarJson
+     * 
+     * @description ::  Função que organiza o objeto original
+     * 
      * @param {Object} json
      * @param {String} type
      * @param {String} id
@@ -98,7 +221,10 @@ function GridEvent() {
     };
 
     /**
-     * Função que organiza o String
+     * OrderString
+     * 
+     * @description ::  Função que organiza o String
+     * 
      * @param {String} a
      * @param {String} b
      * @returns {Number}
@@ -120,7 +246,10 @@ function GridEvent() {
     };
 
     /**
-     * Função que organiza floats
+     * OrderFlt
+     *  
+     * @description ::  Função que organiza floats
+     * 
      * @param {Float} a
      * @param {Float} b
      * @returns {Float}
@@ -133,7 +262,10 @@ function GridEvent() {
     };
 
     /**
-     * Função que organiza interger
+     * OrderInt
+     *  
+     * @description ::  Função que organiza interger
+     * 
      * @param {Interger} a
      * @param {Interger} b
      * @returns {Interger}
@@ -145,21 +277,71 @@ function GridEvent() {
             return parseInt(b) - parseInt(a);
     };
 
-    /**
-     * Função que busca elemento DON
-     * @param  {String} elem
-     * @return {DON}
-     */
-    var selector = function(elem) {
-        return document.querySelectorAll(elem)[0];
-    };
+    //
+    //
+    //  Eventos
+    //
+    //
 
     /**
-     * Função que cria elemento na DON
-     * @param  {String} elem
-     * @return {DON}
+     * TerminoEdicao
+     * 
+     * @description :: Evento ao sair da edição da linha
+     * 
+     * @param {Events} e
+     * @returns {GridEvent.terminoEdicao}
      */
-    var create = function(elem) {
-        return document.createElement(elem);
+    var terminoEdicao = function(e) {
+        var valor = "";
+        var entrou = false;
+        var antigoValor = this.getAttribute("valor");
+        var novoValor = this.value;
+        var linhaID = this.getAttribute("linha-id");
+        var dataID = this.getAttribute("data-id");
+        var colunaID = this.getAttribute("coluna-id");
+
+        e.preventDefault();
+
+        if (e.keyCode) {
+            // Evento do Enter
+            if (e.keyCode === 13) {
+                this.onblur = null;
+                valor = novoValor;
+                this.parentNode.ondblclick = textfield;
+                this.parentNode.innerHTML = valor;
+                entrou = true;
+
+            }
+            // Evento Esc
+            else if (e.keyCode === 27) {
+                this.onblur = null;
+                valor = antigoValor;
+                this.parentNode.ondblclick = textfield;
+                this.parentNode.innerHTML = valor;
+                entrou = true;
+            }
+        } else {
+            valor = novoValor;
+            this.parentNode.ondblclick = textfield;
+            this.parentNode.innerHTML = valor;
+            entrou = true;
+        }
+
+        //  ====================================================================
+        //  Callbacks
+        //  ====================================================================
+        if (entrou && valor !== antigoValor) {
+            editaCallback(antigoValor, valor, dataID, linhaID, colunaID);
+        }
     };
+
+    var retorno = {
+        init: init,
+        monitorDeEventos: monitorDeEventos,
+        // Eventos
+        ordenar: ordenar,
+        textfield: textfield
+    };
+    return retorno;
+
 }

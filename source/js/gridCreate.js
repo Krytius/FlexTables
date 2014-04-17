@@ -1,7 +1,35 @@
 var GridCreate = function() {
 
+    //
+    //
+    //  Globais
+    //
+    //
+
     var $, create, element, object, constante;
     var larguraHeader;
+    var largura, colunas, eventos, tipo, alinhamento;
+    var linha = 0;
+
+    var adicionaCallback;
+
+    //
+    //
+    //  Getters e Setters
+    //
+    //
+
+    // ================================================
+    //  Callback Monitor de Eventos ( Adicionar Linha )
+    // ================================================
+    var setAdicionaCallback = function(callback) {
+        adicionaCallback = callback;
+        return;
+    };
+
+    var getAdicionaCallback = function(callback) {
+        return adicionaCallback;
+    };
 
     //
     //
@@ -27,6 +55,11 @@ var GridCreate = function() {
         constante = retorno.getConstantes();
         $ = retorno.$;
         create = retorno.create;
+        largura = retorno.getLarguraColunas();
+        eventos = retorno.getColunasEventos();
+        colunas = retorno.getColunas();
+        tipo = retorno.getColunasTipo();
+        alinhamento = retorno.getColunasAlinhamento();
 
         // =====================================================================
         // Inicializar
@@ -61,36 +94,26 @@ var GridCreate = function() {
      * @returns {void}
      */
     var header = function() {
-        var colunas = object.getColunas();
-        var largura = object.getLarguraColunas();
-        var tipo = object.getColunasTipo();
-        var alinhamento = object.getColunasAlinhamento();
-
         var quant = colunas.length;
 
         var div = create('div');
         div.className = "mw-header";
 
         var table = create('table');
-        table.style.width = element.offsetWidth - constante.LARGURA_SCROLL + "px";
+        table.style.width = (element.offsetWidth - constante.LARGURA_SCROLL) + "px";
 
         var tr = create('tr');
 
         for (var i = 0; i < quant; i++) {
-
             var td = create('td');
-            td.width = largura[i];
             td.setAttribute('data-id', i);
             td.setAttribute('type-coluna', tipo[i]);
             td.className = 'mw-header-td';
-            td.onclick = function() {
-//                gridEvent.ordenar(this, function(objectJson) {
-//                    refreshGridOrganizacao(objectJson);
-//                });
-            };
+            td.onclick = object.gridEvent.ordenar;
 
             var divTd = create('div');
             divTd.className = "mw-header-td-div";
+            divTd.style.width = (largura[i]) + 'px';
 
             if (!alinhamento[i]) {
                 alinhamento[i] = "left";
@@ -125,14 +148,15 @@ var GridCreate = function() {
         div.className = "mw-content";
         div.style.height = (element.offsetHeight - larguraHeader) + "px";
         div.tabIndex = "1";
-        //div.onkeydown = gridMark.movimentLine;
+        div.onkeydown = object.gridMark.movimentLine;
 
         if (quantLinhas > 0) {
             var table = create('table');
             table.style.width = (element.offsetWidth - constante.LARGURA_SCROLL) + "px";
 
             for (var l = 0; l < quantLinhas; l++) {
-                addLinha(objeto.rows[l], l, table);
+                var tr = addLinha(objeto.rows[l], l);
+                table.appendChild(tr);
             }
 
             div.appendChild(table);
@@ -145,30 +169,72 @@ var GridCreate = function() {
             div2.innerHTML = idioma[000];
             div.appendChild(div2);
         }
-
         element.appendChild(div);
     };
+    
+    /**
+     * Refresh
+     * 
+     * @description ::  Remonta o grid com novos objetos
+     * 
+     * @param {Object} objeto
+     * @returns {void}
+     */
+    var refresh = function(objeto) {
+        var elemento = $('.mw-content');
+        elemento.innerHTML = "";
+        var quantLinhas = objeto.rows.length;
 
-    var addLinha = function(obj, l, table) {
-        var largura = object.getLarguraColunas();
-        var tipo = object.getColunasTipo();
-        var alinhamento = object.getColunasAlinhamento();
-        var colunas = object.getColunas();
+        if (quantLinhas > 0) {
+            var table = create('table');
+            table.style.width = (element.offsetWidth - constante.LARGURA_SCROLL) + "px";
+
+            for (var l = 0; l < quantLinhas; l++) {
+                var tr = addLinha(objeto.rows[l], l);
+                table.appendChild(tr);
+            }
+
+            elemento.appendChild(table);
+        } else {
+            var div2 = create('div');
+            div2.className = 'mw-content-clear';
+            div2.style.width = (element.offsetWidth - constante.LARGURA_SCROLL) + "px";
+            div2.style.height = (element.offsetHeight - larguraHeader) + "px";
+            div2.style.lineHeight = (element.offsetHeight - larguraHeader) + "px";
+            div2.innerHTML = idioma[000];
+            elemento.appendChild(div2);
+        }
+    };
+
+    /**
+     * AddLinha
+     * 
+     * @description ::  Adiciona Linha no grid
+     * 
+     * 
+     * @param {Object} obj
+     * @param {Integer} l
+     * @returns {GridCreate.addLinha.tr}
+     * 
+     * @example 
+     *  var obj = {
+     *      id: "",
+     *      data: ["Produto Proprio 1", "10", "1"]
+     *  };
+     *  var id = 10000;
+     *  addLinha(obj, id);
+     */
+    var addLinha = function(obj, l) {
+        if (l > linha) {
+            linha = l;
+        }
         var quantColunas = colunas.length;
 
         var tr = create('tr');
         tr.className = "mw-content-tr";
         tr.setAttribute('linha-id', l);
         tr.setAttribute('data-id', obj.id);
-        //tr.onclick = gridMark.selectRow;
-//
-//            if (callbackOnDbClick) {
-//                tr.ondblclick = rowDbClick;
-//            }
-//
-//            if (contextMenu.length > 0) {
-//                tr.oncontextmenu = gridContextMenu.vicContextMenu;
-//            }
+        tr.onclick = object.gridMark.selectRow;
 
         for (var c = 0; c < quantColunas; c++) {
 
@@ -177,25 +243,103 @@ var GridCreate = function() {
             td.setAttribute('colum-id', c);
             td.width = largura[c];
 
-//                var divTd = gridElement.createColumType(colunasEvents[c], objectJson.rows[l].data[c], colunasWidth[c], c);
-//                gridElement.elementEvent(divTd, colunasEvents[c], colunasType[c], function(obj) {
-//                    igualaObjetos(obj);
-//                });
-
-            //td.appendChild(divTd);
+            // =================================================================
+            //  Chamada dos Eventos da Linha
+            // =================================================================
+            var divTd = criaColunaTipo(eventos[c], c, obj.data[c]);
+            td.appendChild(divTd);
             tr.appendChild(td);
         }
-        table.appendChild(tr);
+        return tr;
+    };
 
+    /**
+     * criaColunaTipo
+     * 
+     * @description :: Cria os tipos de Coluna e seus respectivos eventos.
+     * 
+     * @param {type} tipo
+     * @param {type} indice
+     * @param {type} val
+     * @returns {GridCreate.createDiv.divTd}
+     */
+    var criaColunaTipo = function(tipo, indice, val) {
+        var elemento;
+        switch (tipo) {
+            case "edit":
+            default:
+                elemento = createDiv(indice, val);
+                break;
+        }
+        return elemento;
+    };
 
+    /**
+     * CreateDiv
+     * 
+     * @description ::  Criação da coluna do tipo {edit|noEvent}
+     *                  Edit    :: Abre um Textfield ( Quando DoubleClick ) 
+     *                  noEvent :: Sem Evento
+     * 
+     * @param {Interger} indice
+     * @returns {GridCreate.createDiv.divTd}
+     */
+    var createDiv = function(indice, val) {
 
+        var divTd = create('div');
+        divTd.className = "mw-content-td-div";
+        divTd.style.width = (largura[indice]) + "px";
 
-        // Eventos
-//        var objetosCallbacks = {
-//            addRow: self.addRow
-//        };
+        if (!alinhamento[indice]) {
+            alinhamento[indice] = "left";
+        }
 
-        //gridMark.parametrosPaginacao(div, objetosCallbacks);  
+        divTd.style.textAlign = alinhamento[indice];
+        divTd.innerHTML = val;
+        divTd.setAttribute('title', val);
+
+        // =============================================================
+        // Adicionar Eventos
+        // =============================================================
+        if (eventos[indice] === "edit") {
+            divTd.ondblclick = object.gridEvent.textfield;
+        }
+
+        return divTd;
+    };
+
+    //
+    //
+    //  Eventos
+    //
+    //
+
+    /**
+     * AdicionaLinha
+     * 
+     * @description :: Adiciona Linha no grid.
+     * 
+     * @param {Interger} id
+     * @param {Array} data
+     * @returns {void}
+     */
+    var adicionaLinha = function(id, data) {
+        var tabela = $('.mw-content table');
+
+        var obj = {
+            id: id,
+            data: data
+        };
+
+        var tr = addLinha(obj, (linha + 1));
+        tabela.appendChild(tr);
+
+        //  ====================================================================
+        //  Callbacks
+        //  ====================================================================
+        if (adicionaCallback) {
+            adicionaCallback(obj);
+        }
     };
 
     //
@@ -205,7 +349,13 @@ var GridCreate = function() {
     //
 
     var retorno = {
-        init: init
+        init: init,
+        refresh: refresh,
+        // Eventos
+        adicionaLinha: adicionaLinha,
+        // Callbacks
+        setAdicionaCallback: setAdicionaCallback,
+        getAdicionaCallback: getAdicionaCallback
     };
     return retorno;
 };
