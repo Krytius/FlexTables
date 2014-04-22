@@ -17,11 +17,6 @@ function GridMark() {
     var quantidadePaginas = 0;
     var linhasPorPagina = 0;
     var tamanhoPagina = 0;
-
-    // Callbacks
-    var objetoCallback = {};
-    var callbackOnKeyPress;
-    var callbackOnDeleteRow;
     
     //
     //
@@ -40,6 +35,20 @@ function GridMark() {
     var getLinhaAnterior = function() {
         return linhaAnterior;
     };
+    
+    // ====================================
+    //  Linha Selecionada
+    // ====================================
+    var getRowSelect = function() {
+        if (linhaSelectAtual) {
+            return {
+                linha: linhaSelectAtual,
+                id: $('tr.mw-content-tr[linha-id="' + linhaSelectAtual + '"]').getAttribute('data-id')
+            };
+        }
+        return idioma["linhaSelecionada"];
+    };
+    
     
     //
     //
@@ -241,49 +250,20 @@ function GridMark() {
             return false;
     };
     
-     /**
-     * Função que retorna linha selecionada e linha selecionada anterior
-     * @return {[type]} [description]
-     */
-    var getRowSelect = function() {
-        if (linhaSelectAtual) {
-            return {
-                rowSelect: linhaSelectAtual,
-                idSelect: $('tr.mw-content-tr[linha-id="' + linhaSelectAtual + '"]').getAttribute('data-id')
-            };
-        }
-        return {
-            rowSelect: null,
-            idSelect: null
-        };
-    };
-
-     
-    /**
-     * Seleciona linha do grid adicionado manualmente
-     * @param {DON} element
-     * @returns {void}
-     */
-    var selectionRowForce = function(element) {
-        if (linhaAnterior) {
-            var elemet = selector('tr.mw-content-tr[linha-id="' + linhaAnterior + '"]');
-            elemet.className = elemet.className.replace(" select", "");
-            self.removeContext();
-        }
-
-        linhaSelectAtual = element.getAttribute("linha-id");
-        element.className += " select";
-
-        linhaAnterior = linhaSelectAtual;
-        getPaginacao("click");
-    };
 
     var retorno = {
         init: init,
+        // Getters e Setters
+        setLinhaAnterior: setLinhaAnterior,
+        getLinhaAnterior: getLinhaAnterior,
+        getRowSelect: getRowSelect,
+        
+        
         selectRow: selectRow,
         selecionaLinha: selecionaLinha,
         // Eventos
-        movimentLine: movimentLine
+        movimentLine: movimentLine,
+        configPaginacao: configPaginacao
     };
     return retorno;
 }

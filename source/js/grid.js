@@ -14,6 +14,7 @@ function Grid(idDom) {
     var gridCreate = new GridCreate();
     var gridEvent = new GridEvent();
     var gridMark = new GridMark();
+    var gridObject = new GridObject();
 
     //  
     //  
@@ -135,7 +136,10 @@ function Grid(idDom) {
     //
 
     /**
-     * Função que inicia a procedimento de montagem do Grid
+     * Init
+     * 
+     * @description :: Função que inicia a procedimento de montagem do Grid
+     * 
      * @param  {json} json
      * @return {void}
      */
@@ -146,15 +150,19 @@ function Grid(idDom) {
 
 
     /**
-     * Função que inicia processo de plotagem do grid
+     * InitGrid
+     * 
+     * @description :: Função que inicia processo de plotagem do grid
+     * 
      * @return {void}
      */
     var initGrid = function() {
+        var error = gridEvent.getErrorCallback();
         if (colunas.length > 0) {
             if (!(colunasLargura.length > 0) && tentativas <= maximoTentativas) {
                 tentativas++;
                 setTimeout(function() {
-                    console.log(idioma[002]);
+                    error(idioma[002]);
                     initGrid();
                 }, 30);
                 return;
@@ -166,7 +174,7 @@ function Grid(idDom) {
             iniciarClasses(retorno);
         } else {
             setTimeout(function() {
-                console.log(idioma[001]);
+                error(idioma[001]);
                 initGrid();
             }, 300);
         }
@@ -184,6 +192,7 @@ function Grid(idDom) {
         gridCreate.init(retorno);
         gridEvent.init(retorno);
         gridMark.init(retorno);
+        gridObject.init(retorno);
     };
 
     /**
@@ -253,142 +262,11 @@ function Grid(idDom) {
         return colunasLargura;
     };
 
-
-
     /**
-     * Função que constroí filtro se houver parâmetros de filtros
-     * @returns {void}
-     */
-    var filter = function() {
-        if (!(colunasFilter.length > 0))
-            return;
-
-        // Variaveis
-        var quantColunas = colunas.length;
-        var colunasComFiltros = [];
-
-        for (var i = 0; i < quantColunas; i++) {
-            if (colunasFilter[i].status)
-                colunasComFiltros.push([colunasFilter[i], i]);
-        }
-
-        gridFilter.setColumsFilter(colunasComFiltros);
-        gridFilter.constructFilter();
-    };
-
-
-    /**
-     * Função que apaga linha pela numero do filho
-     * @param {Interger} linhaId
-     * @returns {void}
-     */
-    var deleteRow = function(linhaId) {
-
-        var table = selector('.mw-content table');
-        var scrollTop = selector('.mw-content').scrollTop;
-        var dataId = table.childNodes[linhaId].getAttribute('data-id');
-
-        table.removeChild(table.childNodes[linhaId]);
-        object.rows.splice(linhaId, 1);
-        self.refreshGrid(object);
-        igualaObjetos(object);
-        selector('.mw-content').scrollTop = scrollTop;
-
-        // Verificação se linha deletada não é a marcada
-        if (linhaId === gridMark.getLinhaAnterior()) {
-            gridMark.setLinhaAnterior(null);
-        }
-
-        if (callbackOnDeleteRow)
-            callbackOnDeleteRow(parseInt(linhaId), parseInt(dataId));
-    };
-
-    /**
-     * Função que apaga linha pelo id do object
-     * @param {Interger} dataId
-     * @returns {void}
-     */
-    var deleteRowId = function(dataId) {
-
-        var linhaId = selector('tr.mw-content-tr[data-id="' + dataId + '"]').getAttribute('linha-id');
-        var scrollTop = selector('.mw-content').scrollTop;
-
-        object.rows.splice(linhaId, 1);
-        self.refreshGrid(object);
-        igualaObjetos(object);
-        selector('.mw-content').scrollTop = scrollTop;
-
-        // Verificação se linha deletada não é a marcada
-        if (linhaId === gridMark.getLinhaAnterior()) {
-            gridMark.setLinhaAnterior(null);
-        }
-
-        if (callbackOnDeleteRow)
-            callbackOnDeleteRow(parseInt(linhaId), parseInt(dataId));
-    };
-
-    /**
-     * Id Selecionado
-     * @return {Interger} Id selecionado Representa Id do objeto
-     */
-    var getRowSelectedId = function() {
-        var rowSelect = gridMark.getRowSelect();
-        return rowSelect.idSelect;
-    };
-
-    /**
-     * Linha Selecionada
-     * @return {Interger} Linha selecionada Representa array
-     */
-    var getRowSelected = function() {
-        var rowSelect = gridMark.getRowSelect();
-        return rowSelect.rowSelect;
-    };
-
-    var rowDbClick = function() {
-        var linhaId = this.getAttribute('linha-id');
-        var dataId = this.getAttribute('data-id');
-        callbackOnDbClick(linhaId, dataId);
-    };
-
-    /**
-     * Clear dos filtros
-     * @param  {Function} callback
-     * @return {void}
-     */
-    var clearFilter = function(callback) {
-        var obj = gridFilter.clearFilter();
-        callback(obj.filtroId, obj.columId);
-        return;
-    };
-
-    /**
-     * Monitor de eventos de deleção de linha
-     * @param {Function} callback
-     * @returns {void}
-     */
-    var setCallbackOnDeleteRow = function(callback) {
-        callbackOnDeleteRow = callback;
-        return;
-    };
-
-    /**
-     * Monitor de eventos do objeto principal
-     * @param {Function} callback
-     * @returns {void}
-     */
-    var setMonitoringAlterObject = function(callback) {
-        callbackAlterObject = callback;
-        return;
-    };
-
-    var setDbClickRow = function(callback) {
-        callbackOnDbClick = callback;
-        return;
-    };
-
-    /**
-     * Função que busca elemento DON
+     * Selector
+     * 
+     * @description :: Função que busca elemento DON
+     * 
      * @param  {String} elem
      * @return {DON}
      */
@@ -397,14 +275,23 @@ function Grid(idDom) {
     };
 
     /**
-     * Função que cria elemento na DON
+     * Create
+     * 
+     * @description :: Função que cria elemento na DON
+     * 
      * @param  {String} elem
      * @return {DON}
      */
     var create = function(elem) {
         return document.createElement(elem);
     };
-
+    
+    //
+    //
+    //  Publicas
+    //
+    //
+    
     var retorno = {
         // Inicialização do Grid
         init: init,
@@ -421,6 +308,7 @@ function Grid(idDom) {
         getColunasTipo: getColunasTipo,
         setColunasEventos: setColunasEventos,
         getColunasEventos: getColunasEventos,
+        setConstantes: setConstantes,
         getConstantes: getConstantes,
         // Manipulação de DON
         element: element,
@@ -430,8 +318,11 @@ function Grid(idDom) {
         gridCreate: gridCreate,
         gridEvent: gridEvent,
         gridMark: gridMark,
+        gridObject: gridObject,
         // Eventos
         adicionaLinha: gridCreate.adicionaLinha,
+        deletaLinha: gridCreate.deletaLinha,
+        deletaLinhaSelecionada: gridCreate.deletaLinhaSelecionada,
         // Monitor de Eventos
         monitorDeEventos: gridEvent.monitorDeEventos
     };

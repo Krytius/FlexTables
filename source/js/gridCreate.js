@@ -1,4 +1,4 @@
-var GridCreate = function() {
+function GridCreate() {
 
     //
     //
@@ -12,6 +12,7 @@ var GridCreate = function() {
     var linha = 0;
 
     var adicionaCallback;
+    var deletaCallback;
 
     //
     //
@@ -29,6 +30,18 @@ var GridCreate = function() {
 
     var getAdicionaCallback = function(callback) {
         return adicionaCallback;
+    };
+
+    // ================================================
+    //  Callback Monitor de Eventos ( Deleta Linha )
+    // ================================================
+    var setDeletaCallback = function(callback) {
+        deletaCallback = callback;
+        return;
+    };
+
+    var getDeletaCallback = function(callback) {
+        return deletaCallback;
     };
 
     //
@@ -171,7 +184,7 @@ var GridCreate = function() {
         }
         element.appendChild(div);
     };
-    
+
     /**
      * Refresh
      * 
@@ -266,6 +279,9 @@ var GridCreate = function() {
     var criaColunaTipo = function(tipo, indice, val) {
         var elemento;
         switch (tipo) {
+            case "check":
+                elemento = createCheck(indice, val);
+                break;
             case "edit":
             default:
                 elemento = createDiv(indice, val);
@@ -307,6 +323,18 @@ var GridCreate = function() {
 
         return divTd;
     };
+    
+    var createCheck = function(indice, val) {
+        var check = create('div');
+        check.className = "mw-content-td-check " + ((parseInt(val)) ? "enabled" : "disabled");
+        check.setAttribute('value', val);
+        
+        // =============================================================
+        // Adicionar Eventos
+        // =============================================================
+        check.onclick = object.gridEvent.check;
+        return check;
+    };
 
     //
     //
@@ -342,6 +370,43 @@ var GridCreate = function() {
         }
     };
 
+    /**
+     * Deleta Linha
+     * 
+     * @description :: Deleta linha apartir de um id
+     * 
+     * @param {Interger} id
+     * @returns {void}
+     */
+    var deletaLinha = function(id) {
+        var element = $('.mw-content table tr[data-id="' + id + '"]');
+        var linhaID = element.getAttribute('linha-id');
+        $('.mw-content table').removeChild(element);
+
+        object.gridObject.removeIdObject(id);
+
+        if (deletaCallback) {
+            deletaCallback(id, linhaID);
+        }
+    };
+
+    /**
+     * DeletaLinhaSelecionada
+     * 
+     * @description :: Deleta apartir da linha selecionada no grid
+     * 
+     * @returns {void}
+     */
+    var deletaLinhaSelecionada = function() {
+        var obj = object.gridMark.getRowSelect();
+        if (obj.id) {
+            deletaLinha(parseInt(obj.id));
+        } else {
+            var error = object.gridEvent.getErrorCallback();
+            error(obj);
+        }
+    };
+
     //
     //
     //  Publicas
@@ -353,9 +418,14 @@ var GridCreate = function() {
         refresh: refresh,
         // Eventos
         adicionaLinha: adicionaLinha,
+        deletaLinha: deletaLinha,
+        deletaLinhaSelecionada: deletaLinhaSelecionada,
         // Callbacks
         setAdicionaCallback: setAdicionaCallback,
-        getAdicionaCallback: getAdicionaCallback
+        getAdicionaCallback: getAdicionaCallback,
+        setDeletaCallback: setDeletaCallback,
+        getDeletaCallback: getDeletaCallback
     };
     return retorno;
-};
+}
+;

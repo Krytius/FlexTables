@@ -9,20 +9,33 @@ function GridEvent() {
     var $, create, element, object, constante;
     var colunas, eventos, tipo, largura;
     var objetoOrdenar = {id: "", ordenacao: ""};
-    var entrou = false;
 
     // Cache dos Objetos
     var asc = null;
     var desc = null;
 
     // Callbacks
-    var editaCallback;
+    var errorCallback = "";
+    var editaCallback = "";
+    var checkCallback = "";
 
     //
     //
     //  Getters e Setters
     //
     //
+
+    //  ===================================
+    //  Error Evento
+    //  ===================================
+    var setErrorCallback = function(callback) {
+        errorCallback = callback;
+        return;
+    };
+
+    var getErrorCallback = function() {
+        return errorCallback;
+    };
 
     //  ===================================
     //  Editar Evento
@@ -34,6 +47,18 @@ function GridEvent() {
 
     var getEditaCallback = function() {
         return editaCallback;
+    };
+
+    //  ===================================
+    //  Check Evento
+    //  ===================================
+    var setCheckCallback = function(callback) {
+        checkCallback = callback;
+        return;
+    };
+
+    var getCheckCallback = function(callback) {
+        return checkCallback;
     };
 
     //
@@ -78,15 +103,21 @@ function GridEvent() {
      */
     var monitorDeEventos = function(event, callback) {
         switch (event) {
+            case "onError":
+                setErrorCallback(callback);
+                break;
             case "onAdicionar":
                 object.gridCreate.setAdicionaCallback(callback);
                 break;
             case "onEditar":
                 setEditaCallback(callback);
                 break;
-//            case "onCheck":
-//                gridElement.setCallbackOnCheck(callback);
-//                break;
+            case "onDelete":
+                object.gridCreate.setDeletaCallback(callback);
+                break;
+            case "onCheck":
+                setCheckCallback(callback);
+                break;
 //            case "onKeyPress":
 //                gridMark.setCallbackOnKeyPress(callback);
 //                break;
@@ -107,7 +138,7 @@ function GridEvent() {
     //  Manipulação de DON
     //
     //
-    
+
     /**
      * TextField
      * 
@@ -139,6 +170,41 @@ function GridEvent() {
         this.ondblclick = null;
 
         input.focus();
+    };
+
+    /**
+     * Check
+     * 
+     * @description :: Função que pega evento do check
+     * 
+     * @returns {GridEvent.check}     
+     */
+    var check = function() {
+        var colunaId = this.parentNode.getAttribute('colum-id');
+        var linhaId = this.parentNode.parentNode.getAttribute('linha-id');
+        var dataId = this.parentNode.parentNode.getAttribute('data-id');
+        var status = this.getAttribute('value');
+
+        if (parseInt(status)) {
+            this.className = this.className.replace("enabled", "disabled");
+            status = 0;
+        } else {
+            this.className = this.className.replace("disabled", "enabled");
+            status = 1;
+        }
+        this.setAttribute('value', status);
+
+        var objeto = object.getObject();
+        for (var i = 0; i < objeto.rows.length; i++) {
+            if (objeto.rows[i].id === dataId) {
+                objeto.rows[i].data[colunaId] = status;
+                break;
+            }
+        }
+        object.gridObject.atualizaObject(objeto);
+        if (checkCallback) {
+            checkCallback(status, dataId, linhaId, colunaId);
+        }
     };
 
     /**
@@ -186,7 +252,7 @@ function GridEvent() {
 
             if ((!asc && objetoOrdenar.ordenacao === "ASC") || (id !== idAntigo && objetoOrdenar.ordenacao === "ASC")) {
                 asc = objectJson;
-                object.gridCreate.refresh(asc)
+                object.gridCreate.refresh(asc);
             } else if (asc && objetoOrdenar.ordenacao === "ASC") {
                 object.gridCreate.refresh(asc);
             } else if ((!desc && objetoOrdenar.ordenacao === "DESC") || (id !== idAntigo && objetoOrdenar.ordenacao === "DESC")) {
@@ -338,9 +404,11 @@ function GridEvent() {
     var retorno = {
         init: init,
         monitorDeEventos: monitorDeEventos,
+        getErrorCallback: getErrorCallback,
         // Eventos
         ordenar: ordenar,
-        textfield: textfield
+        textfield: textfield,
+        check: check
     };
     return retorno;
 
