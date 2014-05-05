@@ -34,6 +34,7 @@ function Grid(idDom) {
     var colunasAlinhamento = [];
     var colunasTipo = [];
     var colunasEventos = [];
+    var colunasBotoes = [];
 
     var tentativas = 0;
     var maximoTentativas = 2;
@@ -127,6 +128,18 @@ function Grid(idDom) {
 
     var getColunasEventos = function() {
         return colunasEventos;
+    };
+    
+    // ========================================
+    //  Eventos dos Botões
+    // ========================================
+    var setColunasBotoes = function(colBotoes) {
+        colunasBotoes = colBotoes;
+        return;
+    };
+    
+    var getColunasBotoes = function() {
+        return colunasBotoes;
     };
 
     //
@@ -310,6 +323,8 @@ function Grid(idDom) {
         getColunasEventos: getColunasEventos,
         setConstantes: setConstantes,
         getConstantes: getConstantes,
+        setColunasBotoes: setColunasBotoes,
+        getColunasBotoes: getColunasBotoes,
         // Manipulação de DON
         element: element,
         $: selector,

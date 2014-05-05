@@ -8,7 +8,7 @@ function GridCreate() {
 
     var $, create, element, object, constante;
     var larguraHeader;
-    var largura, colunas, eventos, tipo, alinhamento;
+    var largura, colunas, eventos, botaoEvento, tipo, alinhamento;
     var linha = 0;
 
     var adicionaCallback;
@@ -73,6 +73,7 @@ function GridCreate() {
         colunas = retorno.getColunas();
         tipo = retorno.getColunasTipo();
         alinhamento = retorno.getColunasAlinhamento();
+        botaoEvento = retorno.getColunasBotoes();
 
         // =====================================================================
         // Inicializar
@@ -282,6 +283,9 @@ function GridCreate() {
             case "check":
                 elemento = createCheck(indice, val);
                 break;
+            case "button":
+                elemento = createButton(indice, val)
+                break;
             case "edit":
             default:
                 elemento = createDiv(indice, val);
@@ -298,6 +302,7 @@ function GridCreate() {
      *                  noEvent :: Sem Evento
      * 
      * @param {Interger} indice
+     * @param {All} val
      * @returns {GridCreate.createDiv.divTd}
      */
     var createDiv = function(indice, val) {
@@ -324,16 +329,60 @@ function GridCreate() {
         return divTd;
     };
     
+    /**
+     * CreateCheck
+     * 
+     * @description :: Cria o elemento de checkbox
+     *    
+     * @param {Interger} indice
+     * @param {All} val
+     * @returns {GridCreate.createCheck.check}
+     */
     var createCheck = function(indice, val) {
         var check = create('div');
         check.className = "mw-content-td-check " + ((parseInt(val)) ? "enabled" : "disabled");
         check.setAttribute('value', val);
-        
+
         // =============================================================
         // Adicionar Eventos
         // =============================================================
         check.onclick = object.gridEvent.check;
         return check;
+    };
+    
+    /**
+     * CreateButton
+     * 
+     * @description :: Cria o botão no grid
+     * 
+     * @param {type} indice
+     * @param {type} val
+     * @returns {GridCreate.createButton.button}
+     */
+    var createButton = function(indice, val) {
+        var button = create('button');
+        button.style.width = largura[indice] + 'px';
+
+        if (botaoEvento[indice].classe) {
+            button.className = botaoEvento[indice].classe;
+        }
+        if (botaoEvento[indice].id) {
+            button.setAttribute('id', botaoEvento[indice].id);
+        }
+        if (botaoEvento[indice].html) {
+            button.innerHTML = botaoEvento[indice].html;
+        }
+        button.setAttribute('info-data', val);
+        
+        // =============================================================
+        // Adicionar Eventos
+        // =============================================================
+        if (typeof (botaoEvento[indice].evento) === "function") {
+            button.onclick = function() {
+                botaoEvento[indice].evento(val, this);
+            };
+        }
+        return button;
     };
 
     //

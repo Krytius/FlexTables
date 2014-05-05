@@ -59,6 +59,9 @@ function GridElement() {
             case "select":
                 element = createSelected(val, indice);
                 break;
+            case "button":
+                element = createButton(val);
+                break;
             default:
                 element = createDiv(val);
                 break;
