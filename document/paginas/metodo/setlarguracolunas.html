@@ -1,0 +1,40 @@
+<h1>setLarguraColunas(['Vetor', 'de', 'tamanho'])</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Método com tamanho em px de cada coluna.
+		Obs:. Seu elemento deve conter um tamanho de altura e largura. E se baseie nisso para estipular o tamanho das colunas.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Parametros</h4>
+<ul>
+  <li>
+  	Vetor de Largura
+  	<ul>
+  		<li>Não é necessário colocar o px.</li>
+  		<li>(*) Tem cálculo de pegar restante do espaço e colocar divido entre a quantidade de (*).</li>
+
+  	</ul>
+  </li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>var grid = new Grid('elementoID');
+grid.setColunas(['Nome', 'sobrenome', 'telefone']);
+/* Informação de tamanho do vetor tem que ser do mesmo tamanho do de colunas.  */
+grid.setLarguraColunas(['100', '*', '100']);
+</pre>
+	</div>
+	</div>
+	
+</div>
