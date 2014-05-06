@@ -1,0 +1,42 @@
+<h1>setColunasEventos(['Vetor', 'de', 'eventos'])</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Método com evento de cada coluna.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Parametros</h4>
+<ul>
+  <li>
+  	Tipos de Eventos
+  	<ul>
+  		<li>noEvent => Não possui eventos  </li>
+  		<li>check => Cria um checkbox. Callback: <a href="#monitor-oncheck">onCheck</a></li>
+  		<li>edit => Cria um textfield na coluna para alteração. Callback: <a href="#monitor-onedit">onEdit</a></li>
+  		<li>button => cria botão. Parametros de configuração botão: <a href="#metodo-setcolunasbotoes">setColunasBotoes</a></li>
+  	</ul>
+  </li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>var grid = new Grid('elementoID');
+grid.setColunas(['Nome', 'sobrenome', 'telefone']);
+grid.setLarguraColunas(['100', '*', '100']);
+grid.setLarguraColunas(['str', 'str', 'int']);
+// Eventos da coluna
+grid.setColunasEventos(['noEvent', 'edit', 'noEvent']);
+</pre>
+	</div>
+	</div>
+	
+</div>

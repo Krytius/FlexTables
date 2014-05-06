@@ -1,0 +1,48 @@
+<h1>setColunasBotoes(['Vetor', 'de', 'parametros', 'dos', 'botoes'])</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Método com parametro de configuração dos botões do grid.
+		Lembrando que a posição do vetor tem que corresponder a posição dos eventos da colunas.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Parametros</h4>
+<ul>
+  <li>
+  	Tipos de Parametros
+  	<ul>
+  		<li>classe => classe CSS. (Não obrigatório)</li>
+  		<li>id => ID. (Não obrigatório)</li>
+  		<li>html => Interior do botão.</li>
+  		<li>evento => Callback do click do botão. <a href="#eventos-callbackdobotao">callbackDoBotao</a>. (Não obrigatório)</li>
+  	</ul>
+  </li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>var grid = new Grid('elementoID');
+grid.setColunas(['Produto', 'Preço', 'Quantidade']);
+grid.setLarguraColunas(['100', '*', '100']);
+grid.setLarguraColunas(['str', 'str', 'int']);
+grid.setColunasEventos(['noEvent', 'button', 'noEvent']);
+grid.setColunasBotoes([{},{
+  classe: 'button2',
+  id: 'button2',
+  evento: function(id, elemento) {},
+  html: "Teste"
+},{}]);
+</pre>
+	</div>
+	</div>
+	
+</div>

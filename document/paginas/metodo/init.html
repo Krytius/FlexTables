@@ -1,0 +1,46 @@
+<h1>init(JSON)</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Método que inicia o processo de contrução do grid.
+		Necessita de um objeto tipo <a href="#metodo-json">JSON</a> para haver a montagem do grid.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Parametros</h4>
+<ul>
+  <li>
+  	<a href="#metodo-json">JSON</a>
+  </li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>var grid = new Grid('elementoID');
+grid.setColunas(['Produto', 'Preço', 'Quantidade']);
+grid.setLarguraColunas(['100', '*', '100']);
+grid.setLarguraColunas(['str', 'str', 'int']);
+grid.setColunasEventos(['noEvent', 'noEvent', 'noEvent']);
+grid.init({
+    "rows": [
+        {
+            "id": "864", "data": ["Produto 1", "10.00", "2"]
+        },
+        {
+            "id": "865", "data": ["Produto 2", "0.00", "0"]
+        }
+    ]
+});
+</pre>
+	</div>
+	</div>
+	
+</div>
