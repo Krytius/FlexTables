@@ -1,0 +1,33 @@
+<h1>onCheck</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Evento do monitor de eventos que pega qualquer troca de status de um check nas linhas do grid.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Callback</h4>
+<ul>
+	<li>Valor - Novo valor do checkbox</li>
+	<li>Id - Id da nova linha marcada/desmarcada.</li>
+	<li>Posicao - Posição da linha marcada/desmarcada.</li>
+	<li>Coluna - Coluna do checkbox.</li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>grid.monitorDeEventos("onCheck", function(valor, id, posicao, coluna) {
+	console.log(valor, id, posicao, coluna);
+});</pre>
+	</div>
+	</div>
+	
+</div>

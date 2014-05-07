@@ -1,0 +1,125 @@
+<h1>Adicionar Linha</h1>
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+
+<button type="buttom" class="btn btn-primary btn-block" id="add" >Adicionar Linha</button>
+<div id="grid" style="height: 500px; width: 100%;"></div>
+
+<hr>
+<pre>
+var grid = new Grid("grid");
+grid.setColunas(["Nome", "Preco", "Unidade"]);
+grid.setLarguraColunas(["*", "100", "100"]);
+grid.setColunasTipo(["str", "flt", "int"]);
+grid.setColunasEventos(['noEvent', 'noEvent', 'noEvent']);
+grid.setColunasAlinhamento(['center', 'center', 'center']);
+grid.init({
+    "rows": [
+    {
+        "id": "864",
+        "data": ["Produto Proprio 1", "10.00", "2"]
+    }, {
+        "id": "865",
+        "data": ["Produto Proprio 2", "0.00", "0"]
+    }, {
+        "id": "866",
+        "data": ["Produto Proprio 3", "30.00", "2"]
+    }, {
+        "id": "867",
+        "data": ["Produto Proprio 4", "40.00", "2"]
+    }, {
+        "id": "868",
+        "data": ["Produto Proprio 5", "50.00", "2"]
+    }, {
+        "id": "869",
+        "data": ["Produto Proprio 6", "60.00", "2"]
+    }, {
+        "id": "870",
+        "data": ["Produto Proprio 7", "70.00", "2"]
+    }, {
+        "id": "871",
+        "data": ["Produto Proprio 8", "80.00", "2"]
+    }, {
+        "id": "872",
+        "data": ["Produto Proprio 9", "90.00", "2"]
+    }, {
+        "id": "873",
+        "data": ["Produto Proprio 10", "100.00", "2"]
+    }]
+});
+
+grid.monitorDeEventos("onAdicionar", function(id, data) {
+    alert('ID: ' + id + '\n' + 'Informações: ' + data);
+});
+
+var i = 1000;
+document.getElementById('add').onclick = function() {
+    grid.adicionaLinha(i , ['Teste' + i , i + '.00', i]);
+    i++;
+};
+</pre>
+	</div>
+	</div>
+	
+</div>
+<script type="text/javascript">
+var grid;
+$(document).ready(function() {
+    grid = new Grid("grid");
+    grid.setColunas(["Nome", "Preco", "Unidade"]);
+    grid.setLarguraColunas(["*", "100", "100"]);
+    grid.setColunasTipo(["str", "flt", "int"]);
+    grid.setColunasEventos(['noEvent', 'noEvent', 'noEvent']);
+    grid.setColunasAlinhamento(['center', 'center', 'center']);
+    grid.init({
+        "rows": [
+        {
+            "id": "864",
+            "data": ["Produto Proprio 1", "10.00", "2"]
+        }, {
+            "id": "865",
+            "data": ["Produto Proprio 2", "0.00", "0"]
+        }, {
+            "id": "866",
+            "data": ["Produto Proprio 3", "30.00", "2"]
+        }, {
+            "id": "867",
+            "data": ["Produto Proprio 4", "40.00", "2"]
+        }, {
+            "id": "868",
+            "data": ["Produto Proprio 5", "50.00", "2"]
+        }, {
+            "id": "869",
+            "data": ["Produto Proprio 6", "60.00", "2"]
+        }, {
+            "id": "870",
+            "data": ["Produto Proprio 7", "70.00", "2"]
+        }, {
+            "id": "871",
+            "data": ["Produto Proprio 8", "80.00", "2"]
+        }, {
+            "id": "872",
+            "data": ["Produto Proprio 9", "90.00", "2"]
+        }, {
+            "id": "873",
+            "data": ["Produto Proprio 10", "100.00", "2"]
+        }]
+    });
+
+    grid.monitorDeEventos("onAdicionar", function(id, data) {
+        alert('ID: ' + id + '\n' + 'Informações: ' + data);
+    });
+
+    var i = 1000;
+    document.getElementById('add').onclick = function() {
+        grid.adicionaLinha(i , ['Teste' + i , i + '.00', i]);
+        i++;
+    };
+
+});
+</script>

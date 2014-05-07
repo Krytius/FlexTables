@@ -9,8 +9,8 @@ window.onload = function() {
     grid.init(js);
     
     // Monitor de Events
-    grid.monitorDeEventos("adicionaLinha", function(obj) {
-        console.log(obj);
+    grid.monitorDeEventos("onAdicionar", function(id, data) {
+        console.log(id, data);
     });
     
     document.getElementById('button').onclick = function() {

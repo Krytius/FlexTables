@@ -14,8 +14,8 @@ window.onload = function() {
     });
     
     // Monitor de Events (Id da linha Deletada)
-    grid.monitorDeEventos("onDelete", function(obj) {
-        console.log(obj);
+    grid.monitorDeEventos("onDelete", function(id, linhaId) {
+        console.log(id, linhaId);
     });
     
     document.getElementById('deletaLinha').onclick = function() {

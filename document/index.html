@@ -2,13 +2,14 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="">
+        <meta name="description" content="Data View Grid">
         <meta name="author" content="">
         <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
         <title>FlexTables</title>
 
         <!-- Bootstrap core CSS -->
+        <link href="js/flextables/FlexTables.css" rel="stylesheet">
         <link href="css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Just for debugging purposes. Don't actually copy this line! -->
@@ -64,11 +65,11 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">adicionaLinha</a></li>
-                                <li><a href="#">deletaLinha</a></li>
-                                <li><a href="#">deletaLinhaSelecionada</a></li>
-                                <li><a href="#">monitorDeEventos</a></li>
-                                <li><a href="#">callbackDoBotao</a></li>
+                                <li><a href="#evento-adicionalinha">adicionaLinha</a></li>
+                                <li><a href="#evento-deletalinha">deletaLinha</a></li>
+                                <li><a href="#evento-deletalinhaselecionada">deletaLinhaSelecionada</a></li>
+                                <li><a href="#evento-monitordeeventos">monitorDeEventos</a></li>
+                                <li><a href="#evento-callbackdobotao">callbackDoBotao</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -77,11 +78,11 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">onError</a></li>
-                                <li><a href="#">onAdicionar</a></li>
-                                <li><a href="#">onEditar</a></li>
-                                <li><a href="#">onDelete</a></li>
-                                <li><a href="#">onCheck</a></li>
+                                <li><a href="#monitor-onerror">onError</a></li>
+                                <li><a href="#monitor-onadicionar">onAdicionar</a></li>
+                                <li><a href="#monitor-oneditar">onEditar</a></li>
+                                <li><a href="#monitor-ondelete">onDelete</a></li>
+                                <li><a href="#monitor-oncheck">onCheck</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">
@@ -90,10 +91,10 @@
                                 <b class="caret"></b>
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Simples</a></li>
-                                <li><a href="#">Crud grid</a></li>
-                                <li><a href="#">Checkbox no grid</a></li>
-                                <li><a href="#">Botões no grid</a></li>
+                                <li><a href="#exemplo-simples">Simples</a></li>
+                                <li><a href="#exemplo-adicionarlinha">Adicionar Linha</a></li>
+                                <li><a href="#exemplo-deletarlinha">Deleta Linha</a></li>
+                                <li><a href="#exemplo-editarlinha">Edita Linha</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -123,6 +124,7 @@
         <script> var BASE_URL = 'http://' + location.hostname + '/paginas/'; </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
+        <script src="js/flextables/FlexTables.js"></script>
         <script src="js/app.js"></script>
 
 

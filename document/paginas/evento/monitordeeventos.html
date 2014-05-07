@@ -1,0 +1,42 @@
+<h1>monitorDeEventos('evento', Callback)</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Método que monitora o evento solicitado e lança um callback toda vez que esse evento acontece.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Parametros</h4>
+<ul>
+  <li>
+  	Eventos:
+  	<ul>
+  		<li><a href="#monitor-onerror">onError</a></li>
+  		<li><a href="#monitor-onadicionar">onAdicionar</a></li>
+  		<li><a href="#monitor-oneditar">onEditar</a></li>
+  		<li><a href="#monitor-ondelete">onDelete</a></li>
+  		<li><a href="#monitor-oncheck">onCheck</a></li>
+  	</ul>
+  </li>
+  <li>
+  	Callback - cada evento tem um callback específico então verifique o callback de cada evento.
+  </li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>grid.monitorDeEventos("onError", function(obj) {
+	alert(obj);
+});</pre>
+	</div>
+	</div>
+	
+</div>

@@ -1,0 +1,31 @@
+<h1>onAdicionar</h1>
+<hr>
+
+<blockquote>
+	<p>
+		Evento do monitor de eventos que pega qualquer adição nas linhas do grid.
+	</p>
+</blockquote>
+
+<hr>
+
+<h4>Callback</h4>
+<ul>
+  <li>Id - Id da nova linha adicionada.</li>
+  <li>Data - Vetor das colunas do grid, cada posição representa uma coluna.</li>
+</ul>
+
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+<pre>grid.monitorDeEventos("onAdicionar", function(id, data) {
+	console.log(id, data);
+});</pre>
+	</div>
+	</div>
+	
+</div>

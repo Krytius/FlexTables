@@ -415,7 +415,7 @@ function GridCreate() {
         //  Callbacks
         //  ====================================================================
         if (adicionaCallback) {
-            adicionaCallback(obj);
+            adicionaCallback(id, data);
         }
     };
 

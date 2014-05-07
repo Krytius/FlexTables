@@ -1,0 +1,123 @@
+<h1>Deleta Linha</h1>
+<hr>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">Exemplo</h3>
+	</div>
+	<div class="panel-body">
+
+<div id="grid" style="height: 500px; width: 100%;"></div>
+
+<hr>
+<pre>
+var grid = new Grid("grid");
+grid.setColunas(["ID","Nome", "Preco", "Unidade"]);
+grid.setLarguraColunas(["50","*", "100", "100"]);
+grid.setColunasTipo(["int","str", "flt", "int"]);
+grid.setColunasEventos(['noEvent', 'edit', 'edit', 'edit']);
+grid.setColunasAlinhamento(['center' ,'center', 'center', 'center']);
+grid.init({
+    "rows": [
+    {
+        "id": "864",
+        "data": ["864","Produto Proprio 1", "10.00", "2"]
+    }, {
+        "id": "865",
+        "data": ["865","Produto Proprio 2", "0.00", "0"]
+    }, {
+        "id": "866",
+        "data": ["866","Produto Proprio 3", "30.00", "2"]
+    }, {
+        "id": "867",
+        "data": ["867","Produto Proprio 4", "40.00", "2"]
+    }, {
+        "id": "868",
+        "data": ["868","Produto Proprio 5", "50.00", "2"]
+    }, {
+        "id": "869",
+        "data": ["869","Produto Proprio 6", "60.00", "2"]
+    }, {
+        "id": "870",
+        "data": ["870","Produto Proprio 7", "70.00", "2"]
+    }, {
+        "id": "871",
+        "data": ["871","Produto Proprio 8", "80.00", "2"]
+    }, {
+        "id": "872",
+        "data": ["872","Produto Proprio 9", "90.00", "2"]
+    }, {
+        "id": "873",
+        "data": ["873","Produto Proprio 10", "100.00", "2"]
+    }]
+});
+
+grid.monitorDeEventos("onEditar", function(antigoValor, valor, id, posicao, coluna) {
+    alert(
+        'ID: ' + id + '\n' + 
+        'Posicao: ' + posicao + '\n' + 
+        'Coluna: ' + coluna + 'n' +
+        'Antigo: ' + antigoValor + '\n' +
+        'Novo: ' + valor
+    );
+});
+</pre>
+	</div>
+	</div>
+	
+</div>
+<script type="text/javascript">
+var grid;
+$(document).ready(function() {
+    grid = new Grid("grid");
+    grid.setColunas(["ID","Nome", "Preco", "Unidade"]);
+    grid.setLarguraColunas(["50","*", "100", "100"]);
+    grid.setColunasTipo(["int", "str", "flt", "int"]);
+    grid.setColunasEventos(['noEvent', 'edit', 'edit', 'edit']);
+    grid.setColunasAlinhamento(['center' ,'center', 'center', 'center']);
+    grid.init({
+        "rows": [
+        {
+            "id": "864",
+            "data": ["864","Produto Proprio 1", "10.00", "2"]
+        }, {
+            "id": "865",
+            "data": ["865","Produto Proprio 2", "0.00", "0"]
+        }, {
+            "id": "866",
+            "data": ["866","Produto Proprio 3", "30.00", "2"]
+        }, {
+            "id": "867",
+            "data": ["867","Produto Proprio 4", "40.00", "2"]
+        }, {
+            "id": "868",
+            "data": ["868","Produto Proprio 5", "50.00", "2"]
+        }, {
+            "id": "869",
+            "data": ["869","Produto Proprio 6", "60.00", "2"]
+        }, {
+            "id": "870",
+            "data": ["870","Produto Proprio 7", "70.00", "2"]
+        }, {
+            "id": "871",
+            "data": ["871","Produto Proprio 8", "80.00", "2"]
+        }, {
+            "id": "872",
+            "data": ["872","Produto Proprio 9", "90.00", "2"]
+        }, {
+            "id": "873",
+            "data": ["873","Produto Proprio 10", "100.00", "2"]
+        }]
+    });
+
+    grid.monitorDeEventos("onEditar", function(antigoValor, valor, id, posicao, coluna) {
+        alert(
+            'ID: ' + id + '\n' + 
+            'Posicao: ' + posicao + '\n' + 
+            'Coluna: ' + coluna + 'n' +
+            'Antigo: ' + antigoValor + '\n' +
+            'Novo: ' + valor
+        );
+    });
+});
+</script>
